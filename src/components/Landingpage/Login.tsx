@@ -102,11 +102,11 @@ const Login = () => {
     }}
     className="text-pink-500 text-lg">forgot password</Button>
     </div>
-    <div className="btn pt-2">
+    {/* <div className="btn pt-2">
        <Button  className="w-full bg-transparent hover:text-white border-2 border-pink-600 hover:bg-pink-400 sm:text-xl ">Login with Google 
         <Image src="/googleicon.png" alt="google" width={30} height={30} className="w-[30px] h-[30px] ml-4" />
        </Button>
-       </div>
+       </div> */}
     <div className="btn pt-2  sm:flex gap-1  justify-center items-center ">
         <p className="text-lg text-white">Don't have an account?</p>
        <Button variant={"link"} 
