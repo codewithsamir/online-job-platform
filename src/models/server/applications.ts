@@ -1,9 +1,9 @@
 import { Permission } from "node-appwrite";
-import { db } from "../name";
+import { applications, db } from "../name";
 import { databases } from "./config";
 
 export default async function createApplicationsCollection() {
-    await databases.createCollection(db, 'applications', 'Job Applications', [
+    await databases.createCollection(db, applications, applications, [
         Permission.create("users"),
         Permission.read("users"),
         Permission.update("users"),

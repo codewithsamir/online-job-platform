@@ -4,7 +4,7 @@ import { Permission } from "node-appwrite";
 
 export default async function createNotificationsCollection() {
   try {
-    await databases.createCollection(db, notifications, "Notifications", [
+    await databases.createCollection(db, notifications, notifications, [
       Permission.create("users"),
       Permission.read("users"),
       Permission.update("users"),

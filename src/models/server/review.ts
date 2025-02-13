@@ -4,7 +4,7 @@ import { Permission } from "node-appwrite";
 
 export default async function createReviewsCollection() {
   try {
-    await databases.createCollection(db, reviews, "Reviews", [
+    await databases.createCollection(db, reviews, reviews, [
       Permission.create("users"),
       Permission.read("any"),
       Permission.update("users"),

@@ -1,9 +1,9 @@
 import { Permission } from "node-appwrite";
-import { db } from "../name";
+import { candidates, db } from "../name";
 import { databases } from "./config";
 
 export default async function createCandidatesCollection() {
-    await databases.createCollection(db, 'candidates', 'Candidates', [
+    await databases.createCollection(db, candidates, candidates, [
         Permission.create("users"),
         Permission.read("users"),
         Permission.update("users"),

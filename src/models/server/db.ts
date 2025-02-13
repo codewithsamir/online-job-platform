@@ -2,7 +2,7 @@ import { db } from "../name";
 import { databases } from "./config";
 
 // Import all collection creation functions for the job platform
-import createJobsCollection from "./jobdata";
+import createJobsCollection from "./job";
 import createApplicationsCollection from "./applications";
 import createCompaniesCollection from "./companies";
 import createCandidatesCollection from "./candidates";
