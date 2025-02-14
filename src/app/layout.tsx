@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "sonner";
+import Storewrap from "@/components/Landingpage/Storewrap";
 
 
 
@@ -26,15 +28,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   
+
+  
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      
-
+      <Storewrap>
+      <Toaster position="top-right" richColors />
         {children}
-       
+        </Storewrap>
       
       </body>
     </html>

@@ -1,1 +1,6 @@
-{}
+{
+  "/(project)/(auth)/verifyemail/page": "app/(project)/(auth)/verifyemail/page.js",
+  "/(project)/(auth)/emailverified/page": "app/(project)/(auth)/emailverified/page.js",
+  "/(project)/(Home)/page": "app/(project)/(Home)/page.js",
+  "/(project)/(dashboard)/User/Dashboard/page": "app/(project)/(dashboard)/User/Dashboard/page.js"
+}

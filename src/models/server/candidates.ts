@@ -17,10 +17,12 @@ export default async function createCandidatesCollection() {
         databases.createStringAttribute(db, 'candidates', 'email', 250, true),
         databases.createStringAttribute(db, 'candidates', 'phone', 20, false),
         databases.createStringAttribute(db, 'candidates', 'resumeUrl', 500, false),
+        databases.createStringAttribute(db, 'candidates', 'resumeid', 500, false),
         databases.createStringAttribute(db, 'candidates', 'skills', 500, false),
         databases.createStringAttribute(db, 'candidates', 'experience', 100, false),
         databases.createStringAttribute(db, 'candidates', 'education', 250, false),
         databases.createStringAttribute(db, 'candidates', 'profilePictureUrl', 500, false),
+        databases.createStringAttribute(db, 'candidates', 'profilePictureid', 500, false),
     ]);
     console.log("Candidates Attributes Created");
 }

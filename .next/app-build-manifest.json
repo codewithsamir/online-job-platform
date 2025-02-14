@@ -1,3 +1,50 @@
 {
-  "pages": {}
+  "pages": {
+    "/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/(project)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/layout.js"
+    ],
+    "/(project)/(Home)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(Home)/layout.js"
+    ],
+    "/(project)/(Home)/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(Home)/page.js"
+    ],
+    "/(project)/(dashboard)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/layout.js"
+    ],
+    "/(project)/(dashboard)/User/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/layout.js"
+    ],
+    "/(project)/(dashboard)/User/Dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/Dashboard/page.js"
+    ],
+    "/(project)/(auth)/verifyemail/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(auth)/verifyemail/page.js"
+    ],
+    "/(project)/(auth)/emailverified/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(auth)/emailverified/page.js"
+    ]
+  }
 }

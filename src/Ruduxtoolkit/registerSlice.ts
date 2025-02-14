@@ -1,41 +1,59 @@
-import {createSlice} from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+// Define the type for the state
+interface RegisterActiveState {
+  isActivelogin: boolean;
+  isActivecategori: boolean;
+  isActivejobseeker: boolean;
+  isActivejobprovider: boolean;
+  isActivechatbot: boolean;
+  isActiveforgotpassword: boolean;
+}
 
+// Initial state with proper typing
+const initialState: RegisterActiveState = {
+  isActivelogin: false,
+  isActivecategori: false,
+  isActivejobseeker: false,
+  isActivejobprovider: false,
+  isActivechatbot: false,
+  isActiveforgotpassword: false,
+};
+
+// Create the slice with TypeScript
 const registerSlice = createSlice({
-    name: 'registeractive',
-    initialState:{
-        isActivelogin:false,
-        isActivecategori:false,
-        isActivejobseeker:false,
-        isActivejobprovider:false,
-        isActivechatbot:false,
-        isActiveforgotpassword:false,
-
+  name: "registeractive",
+  initialState,
+  reducers: {
+    loginActive: (state, action: PayloadAction<boolean>) => {
+      state.isActivelogin = action.payload;
     },
-    reducers:{
-        loginActive:(state,action)=>{
-                state.isActivelogin = action.payload
-        },
-        categoriActive:(state,action)=>{
-                state.isActivecategori = action.payload
-        },
-        
-        jobseekerActive:(state,action)=>{
-                state.isActivejobseeker = action.payload
-        },
-        jobproviderActive:(state,action)=>{
-                state.isActivejobprovider = action.payload
-        },
-        chatbotActive:(state,action)=>{
-                state.isActivechatbot = action.payload
-        },
-        forgotpasswordActive:(state,action)=>{
-                state.isActiveforgotpassword = action.payload
-        },
-    }
-})
+    categoriActive: (state, action: PayloadAction<boolean>) => {
+      state.isActivecategori = action.payload;
+    },
+    jobseekerActive: (state, action: PayloadAction<boolean>) => {
+      state.isActivejobseeker = action.payload;
+    },
+    jobproviderActive: (state, action: PayloadAction<boolean>) => {
+      state.isActivejobprovider = action.payload;
+    },
+    chatbotActive: (state, action: PayloadAction<boolean>) => {
+      state.isActivechatbot = action.payload;
+    },
+    forgotpasswordActive: (state, action: PayloadAction<boolean>) => {
+      state.isActiveforgotpassword = action.payload;
+    },
+  },
+});
 
+// Export actions and reducer
+export const {
+  loginActive,
+  categoriActive,
+  jobseekerActive,
+  jobproviderActive,
+  chatbotActive,
+  forgotpasswordActive,
+} = registerSlice.actions;
 
-export const {loginActive,categoriActive,jobseekerActive,jobproviderActive,chatbotActive,forgotpasswordActive} = registerSlice.actions
-
-export default registerSlice.reducer
+export default registerSlice.reducer;
