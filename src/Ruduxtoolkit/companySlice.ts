@@ -51,7 +51,7 @@ export const fetchCompanies = createAsyncThunk(
       const response = await databases.listDocuments(db, companies, [
         Query.equal("createdBy", auth.user.$id),
       ]);
-      return response.documents as Company[]; // Return the list of companies
+      return response; // Return the list of companies
     } catch (error: any) {
       throw new Error(error.message || "Failed to fetch companies");
     }
@@ -85,10 +85,11 @@ export const addCompany = createAsyncThunk(
           "unique()", // Auto-generate file ID
           logoFile
         );
+        
         logoId = logoResponse.$id;
         logoUrl = generateFileUrl(ImageBucket, logoId); // Generate URL
       }
-
+      console.log(logoUrl,logoId)
       // Prepare company data with URLs and IDs
       const companyPayload = {
         ...companyData,
@@ -185,7 +186,7 @@ const companySlice = createSlice({
     });
     builder.addCase(addCompany.fulfilled, (state, action) => {
       state.loading = false;
-      state.companies.push(action.payload); // Add the new company to the list
+      state.companies = action.payload; // Add the new company to the list
     });
     builder.addCase(addCompany.rejected, (state, action) => {
       state.loading = false;

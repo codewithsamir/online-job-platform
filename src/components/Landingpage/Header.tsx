@@ -46,7 +46,7 @@ const router = useRouter()
           // Show Avatar if user is logged in
           <Avatar 
           className="cursor-pointer"
-          onClick={() =>router.push(`${user?.prefs?.role === "job seeker" ? "/User/Dashboard" : "/Jobprovider/Dashboard"}`)}
+          onClick={() =>router.push(`${user?.prefs?.role === "job seeker" ? "/User/dashboard" : "/Jobprovider/dashboard"}`)}
           >
             {/* <AvatarImage src={user?.avatarUrl || ""} alt={user.name || "User"} /> */}
             <AvatarFallback>

@@ -5,6 +5,7 @@ import Header from '@/components/dashboard/header';
 import Sidebar from '@/components/dashboard/sidebar';
 import UserProfileform from '@/components/dashboard/userProfileform';
 import { fetchCandidates } from '@/Ruduxtoolkit/candidateSlice';
+import { fetchCompanies } from '@/Ruduxtoolkit/companySlice';
 import { useAppDispatch, useAppSelector } from '@/Ruduxtoolkit/hook';
 import React, { useEffect } from 'react'
 
@@ -15,12 +16,12 @@ const layout = ({
   }>) => {
         const dispatch = useAppDispatch();
         const { user } = useAppSelector((state) => state.auth);
-        const { candidates, loading } = useAppSelector((state) => state.candidate);
-      console.log(candidates)
+        const { companies, loading } = useAppSelector((state) => state.company);
+      console.log(companies)
         // Fetch candidates on component mount
         useEffect(() => {
           
-            dispatch(fetchCandidates());
+            dispatch(fetchCompanies());
           
         }, [dispatch]);
 
@@ -46,7 +47,7 @@ const layout = ({
           <p className="text-white">Loading...</p>
         ) : !user?.emailVerification ? (
           <Confirmemail />
-        ) : candidates?.total > 0 ? (
+        ) : companies?.total > 0 ? (
           children
         ) : (
           <CompanyForm />

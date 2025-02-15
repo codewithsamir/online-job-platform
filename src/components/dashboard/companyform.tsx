@@ -55,13 +55,16 @@ const dispatch = useAppDispatch()
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true); // Start loading
     try {
-    dispatch(addCompany(values))
-
+const res = await    dispatch(addCompany(values))
+if(res.status ===   "success") {
       // Show success toast
       toast.success("Company details submitted successfully!");
 
       // Reset the form
       form.reset();
+}else{
+  toast.error(res?.error?.message);
+}
     } catch (error: any) {
       // Show error toast
       toast.error(error.message || "Failed to submit company details.");

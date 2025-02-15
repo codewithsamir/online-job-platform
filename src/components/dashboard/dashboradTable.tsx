@@ -1,88 +1,83 @@
+import React from "react";
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "@/components/ui/table"
-  
-  const invoices = [
-    {
-      invoice: "INV001",
-      paymentStatus: "Paid",
-      totalAmount: "$250.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV002",
-      paymentStatus: "Pending",
-      totalAmount: "$150.00",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoice: "INV003",
-      paymentStatus: "Unpaid",
-      totalAmount: "$350.00",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoice: "INV004",
-      paymentStatus: "Paid",
-      totalAmount: "$450.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV005",
-      paymentStatus: "Paid",
-      totalAmount: "$550.00",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoice: "INV006",
-      paymentStatus: "Pending",
-      totalAmount: "$200.00",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoice: "INV007",
-      paymentStatus: "Unpaid",
-      totalAmount: "$300.00",
-      paymentMethod: "Credit Card",
-    },
-  ]
-  
-  export default function Dashboardtable() {
-    return (
-      <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Invoice</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {invoices.map((invoice) => (
-            <TableRow key={invoice.invoice}>
-              <TableCell className="font-medium">{invoice.invoice}</TableCell>
-              <TableCell>{invoice.paymentStatus}</TableCell>
-              <TableCell>{invoice.paymentMethod}</TableCell>
-              <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-            </TableRow>
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+interface TableColumn {
+  header: string;
+  accessor: string; // Key in the data object
+  className?: string; // Optional class for styling
+}
+
+interface GenericTableProps {
+  caption?: string; // Optional table caption
+  columns: TableColumn[]; // Array of column definitions
+  data: Record<string, any>[]; // Array of objects representing rows
+  footer?: { label: string; value: string }; // Optional footer
+}
+
+export default function DashboardTable({
+  caption,
+  columns,
+  data,
+  footer,
+}: GenericTableProps) {
+  return (
+    <Table>
+      {/* Table Caption */}
+      {caption && <TableCaption>{caption}</TableCaption>}
+
+      {/* Table Header */}
+      <TableHeader>
+        <TableRow>
+          {columns.map((column, index) => (
+            <TableHead key={index} className={`${column.className} text-white`}>
+              {column.header}
+            </TableHead>
           ))}
-        </TableBody>
+        </TableRow>
+      </TableHeader>
+
+      {/* Table Body */}
+      <TableBody>
+        {data.length > 0 ? (
+          data.map((row, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {columns.map((column, colIndex) => (
+                <TableCell
+                  key={colIndex}
+                  className={column.className}
+                >
+                  {row[column.accessor]}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={columns.length} className="text-center">
+              No data available
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+
+      {/* Table Footer */}
+      {footer && (
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={3}>Total</TableCell>
-            <TableCell className="text-right">$2,500.00</TableCell>
+            <TableCell colSpan={columns.length - 1}>{footer.label}</TableCell>
+            <TableCell className="text-right">{footer.value}</TableCell>
           </TableRow>
         </TableFooter>
-      </Table>
-    )
-  }
-  
+      )}
+    </Table>
+  );
+}

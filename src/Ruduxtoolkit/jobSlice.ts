@@ -11,7 +11,7 @@ export interface Job {
   company: string;
   location: string;
   salary: number;
-  postedOn: string; // ISO date string
+  postedDate: string; // ISO date string
   isActive: boolean;
   postedBy: string; // User ID of the job poster
 }
@@ -88,7 +88,7 @@ export const addJob = createAsyncThunk<
     const jobPayload = {
       ...jobData,
       postedBy: auth.user.$id, // Automatically set the postedBy field
-      postedOn: new Date().toISOString(), // Set the current date as postedOn
+      postedDate: new Date().toISOString(), // Set the current date as postedOn
     };
 
     const response = await databases.createDocument(db, jobs, "unique()", jobPayload);

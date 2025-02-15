@@ -15,7 +15,6 @@ export default async function createApplicationsCollection() {
         databases.createStringAttribute(db, 'applications', 'jobId', 100, true),
         databases.createStringAttribute(db, 'applications', 'candidateId', 100, true),
         databases.createStringAttribute(db, 'applications', 'resumeUrl', 500, true),
-        databases.createStringAttribute(db, 'applications', 'coverLetter', 1000, false),
         databases.createStringAttribute(db, 'applications', 'applicationDate', 100, true),
         databases.createStringAttribute(db, 'applications', 'status', 100, true),
     ]);
