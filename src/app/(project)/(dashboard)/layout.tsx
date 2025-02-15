@@ -1,45 +1,36 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react"; // Import ReactNode
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook";
+import { getUser } from "@/Ruduxtoolkit/authSlice";
 
+interface RootLayoutProps {
+  children: ReactNode; // Explicitly define children type
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: RootLayoutProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { user, isLoading } = useAppSelector((state) => state.auth);
+  const { user, isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
+
+  // Fetch user data if not authenticated and user data is missing
+  useEffect(() => {
+    if (!isAuthenticated && !user) {
+      dispatch(getUser()).unwrap().then((res)=>{
+        console.log(res)
+      }).catch((error) => {
+        router.replace("/");
+        console.error("Error fetching user data:", error);
+      });
+    }
+  }, [dispatch, isAuthenticated, user]);
 
  
-  // Redirect logic based on authentication status and user role
-  useEffect(() => {
-    if (!isLoading) {
-      if (user) {
-        // Redirect based on user role
-        if (user.prefs?.role === "job provider") {
-          router.replace("/Jobprovider/dashboard");
-        } else if (user.prefs?.role === "job seeker") {
-          router.replace("/User/dashboard");
-        } else {
-          console.error("Role not defined for this user.");
-        }
-      } else {
-        // If user is not logged in, ensure they stay on the landing page
-        if (window.location.pathname !== "/") {
-          router.replace("/");
-        }
-      }
-    }
-  }, [ user]);
-
   // Show a loading indicator while fetching user data
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
-  // Render children only if the user is authenticated or on the correct page
+  // Render children only if authentication is determined
   return <>{children}</>;
 }

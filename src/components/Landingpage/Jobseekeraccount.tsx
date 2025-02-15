@@ -64,7 +64,7 @@ const Jobseekeraccount = () => {
       toast.success(result.message);
 
       // Redirect to the user dashboard
-      router.push("/User/Dashboard");
+      router.push("/User/dashboard");
 
       // Close the job seeker registration form
       dispatch(jobseekerActive(false));

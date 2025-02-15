@@ -15,7 +15,7 @@ import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner"; // For toast notifications
 import { useAppDispatch } from "@/Ruduxtoolkit/hook";
-import { addCompany } from "@/Ruduxtoolkit/companySlice";
+import { addCompany, fetchCompanies } from "@/Ruduxtoolkit/companySlice";
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -55,16 +55,16 @@ const dispatch = useAppDispatch()
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true); // Start loading
     try {
-const res = await    dispatch(addCompany(values))
-if(res.status ===   "success") {
+      const res = await    dispatch(addCompany(values))
+      console.log(res)
+      dispatch(fetchCompanies());
+
       // Show success toast
       toast.success("Company details submitted successfully!");
 
       // Reset the form
       form.reset();
-}else{
-  toast.error(res?.error?.message);
-}
+
     } catch (error: any) {
       // Show error toast
       toast.error(error.message || "Failed to submit company details.");

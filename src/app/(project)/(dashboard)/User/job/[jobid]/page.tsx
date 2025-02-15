@@ -1,18 +1,28 @@
+"use client"
 import Jobdescription from '@/components/Landingpage/Jobdescription'
-import React, { useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '@/Ruduxtoolkit/hook'
+import { fetchJobById } from '@/Ruduxtoolkit/jobSlice'
+import React, { use, useEffect, useState } from 'react'
 
 const page = ({params}:any) => {
-    
-    const [title,settitle] =useState("")
+  const resolvedParams:any = use(params);
+  const dispatch = useAppDispatch()
+  const {selectedJob} = useAppSelector((state)=>state.job)
+    // console.log(selectedJob)
+  
     useEffect(()=>{
       const getparams = async ()=>{
-        settitle(decodeURIComponent(params.jobid))
+        const param =  decodeURIComponent(resolvedParams.jobid).split("_")[1]
+        // console.log(param)
+        
+       await dispatch(fetchJobById(param))
       }
       getparams()
     },[])
+    console.log(selectedJob)
   return (
     <div>
-        <Jobdescription data={title}  classNames="text-white" />
+        <Jobdescription data={selectedJob}  classNames="text-white" />
     </div>
   )
 }

@@ -5,9 +5,9 @@ import { Dashboardchart } from "./dashboardchart";
 
 const Dashboardpage = () => {
   // Example data: Replace this with actual data fetched from your backend or Redux state
-  const appliedJobs = [
-    { jobTitle: "Software Engineer", company: "Tech Corp", status: "Pending" },
-    { jobTitle: "Product Manager", company: "Innovate Inc", status: "Accepted" },
+  const appliedJobs:any[] = [
+    // { jobTitle: "Software Engineer", company: "Tech Corp", status: "Pending" },
+    // { jobTitle: "Product Manager", company: "Innovate Inc", status: "Accepted" },
   ];
 
   return (

@@ -62,9 +62,9 @@ console.log(result.user?.prefs?.role)
 
       // Redirect based on user role
       if (result.user?.prefs?.role === "job provider") {
-        router.push("/Jobprovider/Dashboard");
+        router.push("/Jobprovider/dashboard");
       } else if (result.user?.prefs?.role === "job seeker") {
-        router.push("/User/Dashboard");
+        router.push("/User/dashboard");
       } else {
         toast.error("Role not defined for this user.");
       }

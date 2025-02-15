@@ -6,11 +6,6 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/(project)/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(project)/layout.js"
-    ],
     "/(project)/(Home)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -25,6 +20,51 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(project)/(dashboard)/layout.js"
+    ],
+    "/(project)/(dashboard)/User/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/layout.js"
+    ],
+    "/(project)/(dashboard)/User/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/dashboard/page.js"
+    ],
+    "/(project)/(auth)/verifyemail/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(auth)/verifyemail/page.js"
+    ],
+    "/(project)/(auth)/emailverified/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(auth)/emailverified/page.js"
+    ],
+    "/(project)/(dashboard)/User/job/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/job/page.js"
+    ],
+    "/(project)/(dashboard)/User/skills/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/skills/page.js"
+    ],
+    "/(project)/(dashboard)/User/appliedjobs/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/appliedjobs/page.js"
+    ],
+    "/(project)/(dashboard)/User/resumebuilder/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/resumebuilder/page.js"
+    ],
+    "/(project)/(dashboard)/User/profile/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/profile/page.js"
     ],
     "/(project)/(dashboard)/Jobprovider/layout": [
       "static/chunks/webpack.js",
@@ -50,6 +90,16 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(project)/(dashboard)/Jobprovider/profile/page.js"
+    ],
+    "/(project)/(dashboard)/User/job/[jobid]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/job/[jobid]/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

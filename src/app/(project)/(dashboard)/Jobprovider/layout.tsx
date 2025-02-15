@@ -7,7 +7,7 @@ import UserProfileform from '@/components/dashboard/userProfileform';
 import { fetchCandidates } from '@/Ruduxtoolkit/candidateSlice';
 import { fetchCompanies } from '@/Ruduxtoolkit/companySlice';
 import { useAppDispatch, useAppSelector } from '@/Ruduxtoolkit/hook';
-import React, { useEffect } from 'react'
+import React, { use, useEffect } from 'react'
 
 const layout = ({
     children,

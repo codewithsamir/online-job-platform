@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { databases } from "@/models/client/config"; // Import Appwrite configuration
-import { db, jobs } from "@/models/name"; // Import database name
+import { db, jobs, companies } from "@/models/name"; // Import database and collection names
 import { Query } from "appwrite"; // Import Appwrite Query for filtering
 
 // Define the Job interface
@@ -8,7 +8,7 @@ export interface Job {
   $id: string;
   title: string;
   description: string;
-  company: string;
+  company: string; // Company ID
   location: string;
   salary: number;
   postedDate: string; // ISO date string
@@ -16,10 +16,26 @@ export interface Job {
   postedBy: string; // User ID of the job poster
 }
 
+// Define the Company interface
+export interface Company {
+  $id: string;
+  name: string;
+  description?: string;
+  industry: string;
+  website?: string;
+  logoUrl?: string; // URL of the company logo
+}
+
+// Extend the Job interface to include company profile data
+export interface JobWithCompany extends Job {
+  companyProfile?: Company; // Optional company profile data
+}
+
 // Define the initial state
 interface JobState {
-  jobs: Job[]; // Array of job listings
+  jobs: JobWithCompany[]; // Array of job listings with optional company profile data
   userJobs: Job[]; // Array of jobs posted by the current user
+  selectedJob: JobWithCompany | null; // Selected job details (for job detail page)
   loading: boolean;
   error: string | null;
 }
@@ -28,19 +44,56 @@ interface JobState {
 const initialState: JobState = {
   jobs: [],
   userJobs: [], // New state to store jobs posted by the current user
+  selectedJob: null, // To store the selected job's details
   loading: false,
   error: null,
 };
 
-// Async thunk to fetch all jobs
-export const fetchJobs = createAsyncThunk<Job[], void, { rejectValue: string }>(
+// Async thunk to fetch all jobs with company profile data
+export const fetchJobs = createAsyncThunk<JobWithCompany[], void, { rejectValue: string }>(
   "jobs/fetchJobs",
   async (_, { rejectWithValue }) => {
     try {
       const response = await databases.listDocuments(db, jobs);
-      return response.documents as Job[];
+      const jobsData = response.documents as Job[];
+
+      // Fetch company profiles for each job
+      const jobsWithCompany = await Promise.all(
+        jobsData.map(async (job) => {
+          try {
+            const companyResponse = await databases.listDocuments(db, companies, []);
+            const companyProfile = companyResponse as Company;
+            return { ...job, companyProfile };
+          } catch (error) {
+            console.error(`Failed to fetch company profile for job ${job.$id}:`, error);
+            return job; // Return the job without company profile if fetching fails
+          }
+        })
+      );
+
+      return jobsWithCompany;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch jobs");
+    }
+  }
+);
+
+// Async thunk to fetch a single job by $id with company profile data
+export const fetchJobById = createAsyncThunk<JobWithCompany, string, { rejectValue: string }>(
+  "jobs/fetchJobById",
+  async (jobId, { rejectWithValue }) => {
+    try {
+      const jobResponse = await databases.getDocument(db, jobs, jobId);
+      const job = jobResponse as Job;
+    
+      // Fetch company profile for the job
+      // const companyResponse = await databases.getDocument(db, companies, jobId);
+      // const companyProfile = companyResponse as Company;
+
+      return { ...job };
+    } catch (error: any) {
+      console.log(error.message)
+      return rejectWithValue(error.message || "Failed to fetch job details");
     }
   }
 );
@@ -57,7 +110,6 @@ export const fetchJobsByUser = createAsyncThunk<Job[], void, { rejectValue: stri
       if (!auth.user?.$id) {
         throw new Error("User not authenticated");
       }
-
       // Fetch jobs where postedBy matches the current user's ID
       const response = await databases.listDocuments(db, jobs, [
         Query.equal("postedBy", auth.user.$id),
@@ -83,14 +135,12 @@ export const addJob = createAsyncThunk<
     if (!auth.user?.$id) {
       throw new Error("User not authenticated");
     }
-
     // Add the current user's ID to the job data
     const jobPayload = {
       ...jobData,
       postedBy: auth.user.$id, // Automatically set the postedBy field
       postedDate: new Date().toISOString(), // Set the current date as postedOn
     };
-
     const response = await databases.createDocument(db, jobs, "unique()", jobPayload);
     return response as Job;
   } catch (error: any) {
@@ -132,7 +182,7 @@ const jobSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // Fetch all jobs
+    // Fetch all jobs with company profile data
     builder.addCase(fetchJobs.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -144,6 +194,20 @@ const jobSlice = createSlice({
     builder.addCase(fetchJobs.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Failed to fetch jobs";
+    });
+
+    // Fetch job by ID with company profile data
+    builder.addCase(fetchJobById.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchJobById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.selectedJob = action.payload;
+    });
+    builder.addCase(fetchJobById.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Failed to fetch job details";
     });
 
     // Fetch jobs posted by the current user

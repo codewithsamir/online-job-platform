@@ -6,6 +6,7 @@ import candidateSlice from "./candidateSlice";
 import emailVerifySlice from './emailverifySlice';
 import jobSlice from './jobSlice';
 import companySlice from './companySlice';
+import applicationSlice from './applicationSlice';
 
 // Configure the Redux store
 const store = configureStore({
@@ -15,7 +16,8 @@ const store = configureStore({
     candidate: candidateSlice,
     emailverify:emailVerifySlice,
     job:jobSlice,
-    company:companySlice
+    company:companySlice,
+    application:applicationSlice
 
   },
 });

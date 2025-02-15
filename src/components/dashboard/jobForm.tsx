@@ -31,6 +31,9 @@ const formSchema = z.object({
   description: z.string().min(10, {
     message: "Description must be at least 10 characters long.",
   }),
+  specification: z.string().min(10, {
+    message: "specification must be at least 10 characters long.",
+  }),
   companyName: z.string().min(2, {
     message: "Company name must be at least 2 characters long.",
   }),
@@ -64,7 +67,7 @@ const JobForm = () => {
       location: "",
       salaryRange: "",
       jobType: undefined,
-  
+      specification:"",
       applicationDeadline: "",
       isActive: true,
     },
@@ -122,6 +125,20 @@ const JobForm = () => {
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter job description" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* Description */}
+          <FormField
+            control={form.control}
+            name="specification"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Specification</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter job specification" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
