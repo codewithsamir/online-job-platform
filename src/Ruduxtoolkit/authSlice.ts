@@ -28,11 +28,11 @@ export const signupUser = createAsyncThunk<
     // Step 1: Create the user
     await account.create("unique()", email, password, name);
 
+    await dispatch(loginUser({ email, password })).unwrap();
     // Step 2: Update the user's preferences (role)
     await account.updatePrefs({ role });
 
     // Step 3: Automatically log in the user
-    await dispatch(loginUser({ email, password })).unwrap();
 
     // Return success status and message
     return { status: "success", message: "User created and logged in successfully" };

@@ -3,6 +3,9 @@ import { configureStore } from "@reduxjs/toolkit";
 import registerSlice from "./registerSlice";
 import authSlice from "./authSlice";
 import candidateSlice from "./candidateSlice";
+import emailVerifySlice from './emailverifySlice';
+import jobSlice from './jobSlice';
+import companySlice from './companySlice';
 
 // Configure the Redux store
 const store = configureStore({
@@ -10,6 +13,10 @@ const store = configureStore({
     registeractive: registerSlice,
     auth: authSlice,
     candidate: candidateSlice,
+    emailverify:emailVerifySlice,
+    job:jobSlice,
+    company:companySlice
+
   },
 });
 

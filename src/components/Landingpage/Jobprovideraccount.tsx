@@ -64,7 +64,7 @@ const Jobprovideraccount = () => {
       toast.success("Account created successfully!");
 
       // Redirect to the job provider dashboard
-      router.push("/jobprovider/Dashboard");
+      router.push("/Jobprovider/Dashboard");
 
       // Close the job provider registration form
       dispatch(jobproviderActive(false));

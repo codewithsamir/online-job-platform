@@ -17,7 +17,7 @@ export default async function createCompaniesCollection() {
         databases.createStringAttribute(db, 'companies', 'industry', 250, true),
         databases.createStringAttribute(db, 'companies', 'website', 500, false),
         databases.createStringAttribute(db, 'companies', 'logoUrl', 500, false),
-        databases.createStringAttribute(db, 'companies', 'contactEmail', 250, true),
+        databases.createStringAttribute(db, 'companies', 'email', 250, true),
         databases.createStringAttribute(db, 'companies', 'createdBy', 100, true),
     ]);
     console.log("Companies Attributes Created");

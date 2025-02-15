@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { databases } from "@/models/client/config"; // Import Appwrite configuration
 import { db, jobs } from "@/models/name"; // Import database name
+import { Query } from "appwrite"; // Import Appwrite Query for filtering
 
 // Define the Job interface
 export interface Job {
@@ -12,11 +13,13 @@ export interface Job {
   salary: number;
   postedOn: string; // ISO date string
   isActive: boolean;
+  postedBy: string; // User ID of the job poster
 }
 
 // Define the initial state
 interface JobState {
   jobs: Job[]; // Array of job listings
+  userJobs: Job[]; // Array of jobs posted by the current user
   loading: boolean;
   error: string | null;
 }
@@ -24,6 +27,7 @@ interface JobState {
 // Initial state
 const initialState: JobState = {
   jobs: [],
+  userJobs: [], // New state to store jobs posted by the current user
   loading: false,
   error: null,
 };
@@ -41,14 +45,53 @@ export const fetchJobs = createAsyncThunk<Job[], void, { rejectValue: string }>(
   }
 );
 
+// Async thunk to fetch jobs posted by the current user
+export const fetchJobsByUser = createAsyncThunk<Job[], void, { rejectValue: string; getState: any }>(
+  "jobs/fetchJobsByUser",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      // Get the current user's ID from the Redux state
+      const { auth }: { auth: { user: { $id: string } } } = getState() as {
+        auth: { user: { $id: string } };
+      };
+      if (!auth.user?.$id) {
+        throw new Error("User not authenticated");
+      }
+
+      // Fetch jobs where postedBy matches the current user's ID
+      const response = await databases.listDocuments(db, jobs, [
+        Query.equal("postedBy", auth.user.$id),
+      ]);
+      return response.documents as Job[];
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch user jobs");
+    }
+  }
+);
+
 // Async thunk to add a new job
 export const addJob = createAsyncThunk<
   Job, // Return type
   Partial<Job>, // Payload type
-  { rejectValue: string } // Error type
->("jobs/addJob", async (jobData, { rejectWithValue }) => {
+  { rejectValue: string; getState: any } // Error type
+>("jobs/addJob", async (jobData, { getState, rejectWithValue }) => {
   try {
-    const response = await databases.createDocument(db, jobs, "unique()", jobData);
+    // Get the current user's ID from the Redux state
+    const { auth }: { auth: { user: { $id: string } } } = getState() as {
+      auth: { user: { $id: string } };
+    };
+    if (!auth.user?.$id) {
+      throw new Error("User not authenticated");
+    }
+
+    // Add the current user's ID to the job data
+    const jobPayload = {
+      ...jobData,
+      postedBy: auth.user.$id, // Automatically set the postedBy field
+      postedOn: new Date().toISOString(), // Set the current date as postedOn
+    };
+
+    const response = await databases.createDocument(db, jobs, "unique()", jobPayload);
     return response as Job;
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to add job");
@@ -89,7 +132,7 @@ const jobSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // Fetch jobs
+    // Fetch all jobs
     builder.addCase(fetchJobs.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -101,6 +144,20 @@ const jobSlice = createSlice({
     builder.addCase(fetchJobs.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Failed to fetch jobs";
+    });
+
+    // Fetch jobs posted by the current user
+    builder.addCase(fetchJobsByUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchJobsByUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.userJobs = action.payload; // Store jobs posted by the user
+    });
+    builder.addCase(fetchJobsByUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Failed to fetch user jobs";
     });
 
     // Add job
@@ -153,4 +210,3 @@ const jobSlice = createSlice({
 // Export actions and reducer
 export const { reducer: jobReducer } = jobSlice;
 export default jobSlice.reducer;
-
