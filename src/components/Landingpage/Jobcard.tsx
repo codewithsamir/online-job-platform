@@ -24,7 +24,7 @@ console.log(data)
     <CardDescription className="text-lg">{data && data.jobdes.slice(0,50)}...</CardDescription>
     </CardContent>
     <CardFooter className="flex justify-center my-2 w-full">
-    <Button className= "bg-[#d83f8617] border-2 text-[#D83F87] border-[#D83F87] hover:bg-[#D83F87] hover:text-white w-full rounded-2xl">Apply</Button>
+    <Button className= "bg-[#d83f8617] border-2 text-[#D83F87] border-[#D83F87] hover:bg-[#D83F87] hover:text-white w-full rounded-2xl">See Descriptions</Button>
 
     </CardFooter>
   </Card>

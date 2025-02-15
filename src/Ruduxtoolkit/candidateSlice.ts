@@ -12,17 +12,14 @@ interface Candidate {
 
 // Define the initial state
 interface CandidateState {
-  candidates: Candidate; // Single candidate object
+  candidates: Candidate[]; // Single candidate object
   loading: boolean;
   error: string | null;
 }
 
 // Initial state with proper structure
 const initialState: CandidateState = {
-  candidates: {
-    total: 0, // Initialize total to 0
-    documents: [], // Initialize documents as an empty array
-  },
+candidates: [],
   loading: false,
   error: null,
 };
@@ -64,8 +61,8 @@ export const addCandidate = createAsyncThunk(
   async (candidateData: any, { getState }) => {
     try {
       // Get the current user from the Redux state
-      const { auth }: { auth: { user: { $id: string } } } = getState() as {
-        auth: { user: { $id: string } };
+      const { auth }: { auth: { user: { $id: string,email:string } } } = getState() as {
+        auth: { user: { $id: string,email:string } };
       };
 
       if (!auth.user?.$id) {
@@ -74,10 +71,11 @@ export const addCandidate = createAsyncThunk(
 
       // Add the current user's ID to the candidate data
       candidateData.userId = auth.user.$id;
+      candidateData.email = auth.user.email;
 
       // Upload profile picture to the image bucket
-      let profilePictureUrl = "";
-      let profilePictureid = "";
+      let profileUrl = "";
+      let profileid = "";
       if (candidateData.image) {
         const imageFile = candidateData.image;
         const imageResponse = await storage.createFile(
@@ -85,33 +83,22 @@ export const addCandidate = createAsyncThunk(
           "unique()", // Auto-generate file ID
           imageFile
         );
-        profilePictureid = imageResponse.$id;
-        profilePictureUrl = generateFileUrl(ImageBucket, profilePictureid); // Generate URL
+        profileid = imageResponse.$id;
+        profileUrl = generateFileUrl(ImageBucket, profileid); // Generate URL
       }
-
-      // Upload resume to the resume bucket
-      let resumeUrl = "";
-      let resumeid = "";
-      if (candidateData.resume) {
-        const resumeFile = candidateData.resume;
-        const resumeResponse = await storage.createFile(
-          resumeBucket,
-          "unique()", // Auto-generate file ID
-          resumeFile
-        );
-        resumeid = resumeResponse.$id;
-        resumeUrl = generateFileUrl(resumeBucket, resumeid); // Generate URL
-      }
-
+    const {
+      fullName,
+      address,phone,dateofbirth,education,experience,gender,email,userId
+    } =candidateData
       // Prepare candidate data with URLs and IDs
       const candidatePayload = {
-        ...candidateData,
-        profilePictureUrl,
-        profilePictureid,
-        resumeUrl,
-        resumeid,
+        fullName,
+      address,phone,dateofbirth,education,experience,gender,email,userId,
+        profileUrl,
+        profileid,
+       
       };
-
+console.log(candidatePayload)
       // Create the candidate document in the database
       const response = await databases.createDocument(
         db,
@@ -219,7 +206,7 @@ const candidateSlice = createSlice({
     });
     builder.addCase(addCandidate.fulfilled, (state, action) => {
       state.loading = false;
-      state.candidates.push(action.payload); // Add the new candidate to the list
+      state.candidates = action.payload; // Add the new candidate to the list
     });
     builder.addCase(addCandidate.rejected, (state, action) => {
       state.loading = false;

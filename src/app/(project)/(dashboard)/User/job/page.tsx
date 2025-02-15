@@ -42,7 +42,7 @@ const page = () => {
         <h2 className='text-3xl py-4 font-semibold text-center text-white'>Recommended jobs</h2>
         <div className="container">
         <div className="job-container  flex flex-wrap justify-center gap-5">
-        {cardinfo.map((data)=>   <Link href={`/User/job/${data.jobtitle}`} key={data.jobtitle}><Jobcard  data={data}  /></Link>)}
+        {cardinfo.map((data,index)=>   <Link href={`/User/job/${data.jobtitle}`} key={index + 1}><Jobcard  data={data}  /></Link>)}
      
       </div>
         </div>

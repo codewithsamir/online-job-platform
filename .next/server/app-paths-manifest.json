@@ -1,6 +1,8 @@
 {
-  "/(project)/(auth)/verifyemail/page": "app/(project)/(auth)/verifyemail/page.js",
-  "/(project)/(auth)/emailverified/page": "app/(project)/(auth)/emailverified/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/(project)/(Home)/page": "app/(project)/(Home)/page.js",
+  "/(project)/(dashboard)/User/job/[jobid]/page": "app/(project)/(dashboard)/User/job/[jobid]/page.js",
+  "/(project)/(dashboard)/User/job/page": "app/(project)/(dashboard)/User/job/page.js",
+  "/(project)/(dashboard)/User/Profile/page": "app/(project)/(dashboard)/User/Profile/page.js",
   "/(project)/(dashboard)/User/Dashboard/page": "app/(project)/(dashboard)/User/Dashboard/page.js"
 }

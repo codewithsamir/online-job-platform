@@ -16,7 +16,7 @@ export default function RootLayout({
 
   // Redirect if user is not authenticated
   useEffect(() => {
-    if (!isLoading && !user) {
+    if ( !user) {
       router.replace("/"); // Redirect to home page if no user
     }
   }, [isLoading, user, router]);

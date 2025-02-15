@@ -36,15 +36,25 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(project)/(dashboard)/User/Dashboard/page.js"
     ],
-    "/(project)/(auth)/verifyemail/page": [
+    "/(project)/(dashboard)/User/job/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(project)/(auth)/verifyemail/page.js"
+      "static/chunks/app/(project)/(dashboard)/User/job/page.js"
     ],
-    "/(project)/(auth)/emailverified/page": [
+    "/(project)/(dashboard)/User/job/[jobid]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(project)/(auth)/emailverified/page.js"
+      "static/chunks/app/(project)/(dashboard)/User/job/[jobid]/page.js"
+    ],
+    "/(project)/(dashboard)/User/Profile/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/User/Profile/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

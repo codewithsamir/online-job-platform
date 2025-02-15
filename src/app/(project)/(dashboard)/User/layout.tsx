@@ -15,7 +15,7 @@ const Layout = ({
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { candidates, loading } = useAppSelector((state) => state.candidate);
-
+console.log(candidates)
   // Fetch candidates on component mount
   useEffect(() => {
     
@@ -26,7 +26,7 @@ const Layout = ({
   // Define the menu items for the sidebar
   const menu = [
     "Dashboard",
-    "Jobs",
+    "job",
     "Skills",
     "Applied Jobs",
     "Resume Builder",

@@ -24,6 +24,7 @@ import { useAppDispatch } from "@/Ruduxtoolkit/hook";
 import { addCandidate } from "@/Ruduxtoolkit/candidateSlice"; // Import candidateSlice action
 import { toast } from "sonner"; // For toast notifications
 
+// Define the form schema using Zod
 const formSchema = z.object({
   firstname: z.string().min(2, {
     message: "First name must be at least 2 characters long.",
@@ -58,9 +59,7 @@ const formSchema = z.object({
   nationality: z.string().min(2, {
     message: "Nationality must be at least 2 characters long.",
   }),
-  email: z.string().email({
-    message: "Email must be valid.",
-  }),
+ 
   image: z
     .instanceof(File, {
       message: "An image file is required.",
@@ -77,11 +76,11 @@ const formSchema = z.object({
 });
 
 const UserProfileform = () => {
-  const [dob, setDob] = React.useState<Date | undefined>();
+  const [dob, setDob] = React.useState<Date | undefined>(undefined); // Date of birth state
   const [isLoading, setIsLoading] = React.useState(false); // Loading state
   const dispatch = useAppDispatch();
 
-  // Initialize form
+  // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -95,38 +94,32 @@ const UserProfileform = () => {
       dateofbirth: "",
       experience: "",
       nationality: "",
-      email: "",
+      
       image: undefined,
     },
   });
 
   // Handle form submission
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsLoading(true); // Start loading
-      const formData = new FormData();
-      formData.append("firstname", values.firstname);
-      formData.append("lastname", values.lastname);
-      formData.append("contact", values.contact);
-      formData.append("address", values.address);
-      formData.append("gender", values.gender);
-      formData.append("education", values.education);
-      formData.append("skills", values.skills);
-      formData.append("dateofbirth", values.dateofbirth);
-      formData.append("experience", values.experience);
-      formData.append("nationality", values.nationality);
-      formData.append("email", values.email);
-      formData.append("image", values.image);
+   
+    setIsLoading(true); // Stop loading
 
-      // Dispatch the addCandidate action
-      await dispatch(addCandidate(formData)).unwrap();
+     try{
+       // Dispatch the addCandidate action
+       const fullName = `${values.firstname} ${values.lastname}`
+       const {address,contact:phone,dateofbirth,education,experience,gender,image} = values
+       await dispatch(addCandidate({
+        fullName,
+        address,phone,dateofbirth,education,experience,gender,image
+       })).unwrap();
 
-      // Show success toast
-      toast.success("Profile updated successfully!");
-
-      // Reset the form
-      form.reset();
-    } catch (error: any) {
+       // Show success toast
+       toast.success("Profile updated successfully!");
+ 
+       // Reset the form
+       form.reset();
+     }
+     catch (error: any) {
       // Show error toast
       toast.error(error.message || "Failed to update profile.");
     } finally {
@@ -135,231 +128,195 @@ const UserProfileform = () => {
   };
 
   return (
-    <div className="p-4 bg-[#af8dff48] w-[70%] m-auto rounded-lg">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-2 items-center gap-5"
-        >
-          {/* First Name */}
-          <FormField
-            control={form.control}
-            name="firstname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">First Name</FormLabel>
+    <div className="bg-[#5b3e8141]  text-white p-6 rounded-lg w-[550px] mx-auto">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6 items-center">
+        {/* First Name */}
+        <FormField
+          control={form.control}
+          name="firstname"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your first name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Last Name */}
+        <FormField
+          control={form.control}
+          name="lastname"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your last name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+  
+
+        {/* Contact Number */}
+        <FormField
+          control={form.control}
+          name="contact"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contact Number</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your contact number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Address */}
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Address</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your address" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Gender */}
+        <FormField
+          control={form.control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Gender</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <Input placeholder="Enter your first name" {...field} className="text-white" />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your gender" />
+                  </SelectTrigger>
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Last Name */}
-          <FormField
-            control={form.control}
-            name="lastname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Last Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your last name" {...field} className="text-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Skills */}
+        <FormField
+          control={form.control}
+          name="skills"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Skills</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your skills" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your email" {...field} className="text-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Education */}
+        <FormField
+          control={form.control}
+          name="education"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Education</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your education details" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Contact Number */}
-          <FormField
-            control={form.control}
-            name="contact"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Contact Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your contact number" {...field} className="text-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+   
+        {/* Experience */}
+        <FormField
+          control={form.control}
+          name="dateofbirth"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>dateofbirth</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your dateofbirth" type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* Experience */}
+        <FormField
+          control={form.control}
+          name="experience"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Experience</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your experience" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Address */}
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Address</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your address" {...field} className="text-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Nationality */}
+        <FormField
+          control={form.control}
+          name="nationality"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nationality</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your nationality" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Gender */}
-          <FormField
-            control={form.control}
-            name="gender"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Gender</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="text-white">
-                      <SelectValue placeholder="Select your gender" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Skills */}
-          <FormField
-            control={form.control}
-            name="skills"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Skills</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your skills" {...field} className="text-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Education */}
-          <FormField
-            control={form.control}
-            name="education"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Education</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your education" {...field} className="text-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Date of Birth */}
-          <div>
-            <Label htmlFor="picture" className="text-white mb-3 block">
-              Date of Birth
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !dob && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon />
-                  {dob ? format(dob, "PPP") : <span>Date of Birth</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dob}
-                  onSelect={setDob}
-                  initialFocus
+        {/* Profile Picture */}
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Profile Picture</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg"
+                  onChange={(e) => field.onChange(e.target.files?.[0])}
                 />
-              </PopoverContent>
-            </Popover>
-          </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Experience */}
-          <FormField
-            control={form.control}
-            name="experience"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Experience</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your experience" {...field} className="text-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Nationality */}
-          <FormField
-            control={form.control}
-            name="nationality"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Nationality</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your nationality" {...field} className="text-white" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Profile Picture */}
-          <div className="grid w-full text-white items-center gap-1.5">
-            <Label htmlFor="picture" className="text-white">
-              Profile Picture
-            </Label>
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      id="picture"
-                      type="file"
-                      accept="image/png, image/jpeg, image/jpg"
-                      onChange={(e) => field.onChange(e.target.files?.[0])}
-                      className="text-white"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Submit Button */}
-          <Button type="submit" className="w-full text-xl" disabled={isLoading}>
-            {isLoading ? "Submitting..." : "Submit"}
-          </Button>
-        </form>
-      </Form>
+        {/* Submit Button */}
+        <Button  className="col-span-2 w-full bg-primary hover:bg-primary-dark text-white" type="submit" disabled={isLoading}>
+          {isLoading ? "Submitting..." : "Submit"}
+        </Button>
+      </form>
+    </Form>
     </div>
   );
 };
