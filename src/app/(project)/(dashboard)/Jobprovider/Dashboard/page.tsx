@@ -1,27 +1,57 @@
-"use client"
+"use client";
 import Dashboardcard from "@/components/dashboard/dashboardcard";
-import { Dashboardchart } from "@/components/dashboard/dashboardchart";
 import Dashboardtable from "@/components/dashboard/dashboradTable";
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook";
-import { fetchJobsByUser } from "@/Ruduxtoolkit/jobSlice";
-import React, { useEffect } from "react";
-
+import { fetchJobsByUser, fetchApplicationsByJob, fetchCandidateById } from "@/Ruduxtoolkit/jobSlice";
+import React, { useEffect, useState } from "react";
 
 const Dashboardpage = () => {
-  // Example data: Replace this with 
-  // actual data fetched from your backend or Redux state
-const dispatch = useAppDispatch()
-  const {userJobs}= useAppSelector((state)=>state.job)
- 
+  const dispatch = useAppDispatch();
+  const { userJobs, loading: jobsLoading } = useAppSelector((state) => state.job);
+  const [jobsWithApplicants, setJobsWithApplicants] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const userApplications:any[] = [];
+  useEffect(() => {
+    // Fetch jobs posted by the user
+    dispatch(fetchJobsByUser()).then(async () => {
+      if (userJobs.length > 0) {
+        // Fetch applications for each job and get candidate details
+        const jobsData = await Promise.all(
+          userJobs.map(async (job) => {
+            try {
+              // Fetch applications for the specific job ID
+              const applications = await dispatch(fetchApplicationsByJob(job.$id)).unwrap();
 
-  const selectedCandidates = 0
+              // Fetch candidate details for each application
+              const applicants = await Promise.all(
+                applications.map(async (app) => {
+                  const candidate = await dispatch(fetchCandidateById(app.candidateId)).unwrap();
+                  return {
+                    applicantName: candidate?.name || "Unknown",
+                    status: app.status || "Pending",
+                    email: candidate?.email || "N/A", // Add additional candidate details if needed
+                  };
+                })
+              );
 
-useEffect(()=>{
-  dispatch(fetchJobsByUser())
-},[])
-
+              return {
+                ...job,
+                applicants,
+              };
+            } catch (error) {
+              console.error(`Failed to fetch data for job ${job.$id}:`, error);
+              return {
+                ...job,
+                applicants: [], // Return an empty array if fetching fails
+              };
+            }
+          })
+        );
+        setJobsWithApplicants(jobsData);
+      }
+      setLoading(false);
+    });
+  }, [dispatch, userJobs]);
 
   return (
     <div className="w-full space-y-6 text-white">
@@ -35,59 +65,48 @@ useEffect(()=>{
         <Dashboardcard
           content="Total Applications"
           className="bg-orange-400"
-          contentdata={userApplications.length}
+          contentdata={jobsWithApplicants.reduce((total, job) => total + job.applicants.length, 0)}
         />
         <Dashboardcard
           content="Selected Candidates"
           className="bg-green-600"
-          contentdata={selectedCandidates}
+          contentdata={jobsWithApplicants.reduce(
+            (total, job) => total + job.applicants.filter((app) => app.status === "Accepted").length,
+            0
+          )}
         />
-      </div>
-
-      {/* Table Section */}
-      <div className="table w-full">
-        <h2 className="text-xl font-semibold text-white mb-4">Recent Job Applications</h2>
-        {userApplications.length > 0 ? (
-          <Dashboardtable
-            caption="List of users who applied to your jobs."
-            columns={[
-              { header: "Applicant Name", accessor: "applicantName" },
-              { header: "Job Title", accessor: "jobTitle" },
-              { header: "Status", accessor: "status" },
-            ]}
-            data={userApplications}
-          />
-        ) : (
-          <div className="w-full bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
-            No recent job applications.
-          </div>
-        )}
       </div>
 
       {/* Jobs Posted Section */}
       <div className="table w-full">
         <h2 className="text-xl font-semibold text-white mb-4">Your Posted Jobs</h2>
-        {userJobs.length > 0 ? (
-          <Dashboardtable
-            caption="List of jobs you have posted."
-            columns={[
-              { header: "Job Title", accessor: "title" },
-              { header: "Company", accessor: "companyName" },
-              { header: "Job Type", accessor: "jobType" },
-            ]}
-            data={userJobs}
-          />
+        {loading ? (
+          <p className="text-center text-white">Loading...</p>
+        ) : jobsWithApplicants.length > 0 ? (
+          jobsWithApplicants.map((job, index) => (
+            <div key={index} className="mb-6">
+              <h3 className="text-lg font-semibold text-white mb-2">{job.title}</h3>
+              <Dashboardtable
+                caption={`Applicants for "${job.title}"`}
+                columns={[
+                  { header: "Applicant Name", accessor: "applicantName" },
+                  { header: "Email", accessor: "email" },
+                  { header: "Status", accessor: "status" },
+                ]}
+                data={job.applicants}
+              />
+              {job.applicants.length === 0 && (
+                <div className="w-full bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
+                  No applicants for this job yet.
+                </div>
+              )}
+            </div>
+          ))
         ) : (
           <div className="w-full bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
             No jobs posted yet.
           </div>
         )}
-      </div>
-
-      {/* Analytics Section */}
-      <div className="charts">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Application Trends</h2>
-        <Dashboardchart />
       </div>
     </div>
   );

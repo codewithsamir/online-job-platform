@@ -16,14 +16,16 @@ export interface Application {
 
 // Define the initial state
 interface ApplicationState {
-  applications: Application[]; // Array of job applications
+  applicationsByCandidate: Application[]; // Applications filtered by candidate ID
+  applicationsByJob: Application[]; // Applications filtered by job ID
   loading: boolean;
   error: string | null;
 }
 
 // Initial state with proper structure
 const initialState: ApplicationState = {
-  applications: [],
+  applicationsByCandidate: [],
+  applicationsByJob: [],
   loading: false,
   error: null,
 };
@@ -33,9 +35,9 @@ const generateFileUrl = (bucketId: string, fileId: string) => {
   return `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 };
 
-// Async thunk to fetch all applications for the current user
-export const fetchApplications = createAsyncThunk(
-  "applications/fetchApplications",
+// Async thunk to fetch all applications for the current user (by candidateId)
+export const fetchApplicationsByCandidate = createAsyncThunk(
+  "applications/fetchApplicationsByCandidate",
   async (_, { getState }) => {
     try {
       // Get the current user from the Redux state
@@ -51,7 +53,23 @@ export const fetchApplications = createAsyncThunk(
       ]);
       return response.documents as Application[];
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch applications");
+      throw new Error(error.message || "Failed to fetch applications by candidate");
+    }
+  }
+);
+
+// Async thunk to fetch applications for a specific job (by jobId)
+export const fetchApplicationsByJob = createAsyncThunk(
+  "applications/fetchApplicationsByJob",
+  async (jobId: string) => {
+    try {
+      // Fetch applications where jobId matches the provided jobId
+      const response = await databases.listDocuments(db, applications, [
+        Query.equal("jobId", jobId),
+      ]);
+      return response.documents as Application[];
+    } catch (error: any) {
+      throw new Error(error.message || "Failed to fetch applications by job");
     }
   }
 );
@@ -73,10 +91,8 @@ export const addApplication = createAsyncThunk(
       if (!auth.user?.$id) {
         throw new Error("User not authenticated");
       }
-
       // Add the current user's ID as the candidateId
       applicationData.candidateId = auth.user.$id;
-
       // Upload resume file to the resume bucket
       let resumeUrl = "";
       let resumeId = "";
@@ -89,13 +105,15 @@ export const addApplication = createAsyncThunk(
         resumeId = resumeResponse.$id;
         resumeUrl = generateFileUrl(resumeBucket, resumeId); // Generate URL
       }
-  const {applicationDate,candidateId,jobId} = applicationData
+      const { applicationDate, candidateId, jobId } = applicationData;
+
       // Prepare application data with URLs and IDs
       const applicationPayload = {
-        applicationDate,candidateId,jobId,
+        applicationDate,
+        candidateId,
+        jobId,
         resumeUrl,
         resumeId,
-        
         status: "Pending", // Default status
       };
 
@@ -138,14 +156,12 @@ export const updateApplication = createAsyncThunk(
         resumeId = resumeResponse.$id;
         resumeUrl = generateFileUrl(resumeBucket, resumeId); // Generate URL
       }
-
       // Prepare updated application data with URLs and IDs
       const updatedData = {
         ...data,
         resumeUrl,
         resumeId,
       };
-
       // Update the application document in the database
       const response = await databases.updateDocument(db, applications, id, updatedData);
       return response as Application; // Return the updated application
@@ -174,18 +190,32 @@ const applicationSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // Fetch applications
-    builder.addCase(fetchApplications.pending, (state) => {
+    // Fetch applications by candidateId
+    builder.addCase(fetchApplicationsByCandidate.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(fetchApplications.fulfilled, (state, action) => {
+    builder.addCase(fetchApplicationsByCandidate.fulfilled, (state, action) => {
       state.loading = false;
-      state.applications = action.payload;
+      state.applicationsByCandidate = action.payload;
     });
-    builder.addCase(fetchApplications.rejected, (state, action) => {
+    builder.addCase(fetchApplicationsByCandidate.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.error.message || "Failed to fetch applications";
+      state.error = action.error.message || "Failed to fetch applications by candidate";
+    });
+
+    // Fetch applications by jobId
+    builder.addCase(fetchApplicationsByJob.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchApplicationsByJob.fulfilled, (state, action) => {
+      state.loading = false;
+      state.applicationsByJob = action.payload;
+    });
+    builder.addCase(fetchApplicationsByJob.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || "Failed to fetch applications by job";
     });
 
     // Add application
@@ -195,7 +225,7 @@ const applicationSlice = createSlice({
     });
     builder.addCase(addApplication.fulfilled, (state, action) => {
       state.loading = false;
-      state.applications.push(action.payload); // Add the new application to the list
+      state.applicationsByCandidate.push(action.payload); // Add the new application to the list
     });
     builder.addCase(addApplication.rejected, (state, action) => {
       state.loading = false;
@@ -210,7 +240,10 @@ const applicationSlice = createSlice({
     builder.addCase(updateApplication.fulfilled, (state, action) => {
       state.loading = false;
       const updatedApplication = action.payload;
-      state.applications = state.applications.map((app) =>
+      state.applicationsByCandidate = state.applicationsByCandidate.map((app) =>
+        app.$id === updatedApplication.$id ? updatedApplication : app
+      ); // Replace the updated application in the list
+      state.applicationsByJob = state.applicationsByJob.map((app) =>
         app.$id === updatedApplication.$id ? updatedApplication : app
       ); // Replace the updated application in the list
     });
@@ -226,7 +259,10 @@ const applicationSlice = createSlice({
     });
     builder.addCase(deleteApplication.fulfilled, (state, action) => {
       state.loading = false;
-      state.applications = state.applications.filter(
+      state.applicationsByCandidate = state.applicationsByCandidate.filter(
+        (app) => app.$id !== action.payload
+      ); // Remove the deleted application from the list
+      state.applicationsByJob = state.applicationsByJob.filter(
         (app) => app.$id !== action.payload
       ); // Remove the deleted application from the list
     });

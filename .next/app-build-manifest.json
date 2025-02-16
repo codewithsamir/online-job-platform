@@ -15,6 +15,51 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(project)/(Home)/page.js"
+    ],
+    "/(project)/(dashboard)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/layout.js"
+    ],
+    "/(project)/(dashboard)/Jobprovider/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/Jobprovider/layout.js"
+    ],
+    "/(project)/(dashboard)/Jobprovider/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/Jobprovider/dashboard/page.js"
+    ],
+    "/(project)/(auth)/verifyemail/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(auth)/verifyemail/page.js"
+    ],
+    "/(project)/(auth)/emailverified/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(auth)/emailverified/page.js"
+    ],
+    "/(project)/(dashboard)/Jobprovider/addjob/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/Jobprovider/addjob/page.js"
+    ],
+    "/(project)/(dashboard)/Jobprovider/candidate/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/Jobprovider/candidate/page.js"
+    ],
+    "/(project)/(dashboard)/Jobprovider/profile/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(dashboard)/Jobprovider/profile/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

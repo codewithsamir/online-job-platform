@@ -16,14 +16,14 @@ const layout = ({
   }>) => {
         const dispatch = useAppDispatch();
         const { user } = useAppSelector((state) => state.auth);
-        const { companies, loading } = useAppSelector((state) => state.company);
+        const { companies, loading ,isadddone} = useAppSelector((state) => state.company);
       console.log(companies)
         // Fetch candidates on component mount
         useEffect(() => {
           
             dispatch(fetchCompanies());
           
-        }, [dispatch]);
+        }, [dispatch,isadddone]);
 
       const menu = ["Dashboard","Add job","candidate","Profile"]
 

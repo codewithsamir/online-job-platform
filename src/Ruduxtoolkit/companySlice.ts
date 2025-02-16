@@ -20,12 +20,14 @@ export interface Company {
 interface CompanyState {
   companies: Company[]; // Array of company objects
   loading: boolean;
+  isadddone:boolean;
   error: string | null;
 }
 
 // Initial state with proper structure
 const initialState: CompanyState = {
   companies: [],
+  isadddone:false,
   loading: false,
   error: null,
 };
@@ -186,10 +188,13 @@ const companySlice = createSlice({
     });
     builder.addCase(addCompany.fulfilled, (state, action) => {
       state.loading = false;
+      state.isadddone = true;
       state.companies = action.payload; // Add the new company to the list
     });
     builder.addCase(addCompany.rejected, (state, action) => {
       state.loading = false;
+      state.isadddone = false;
+
       state.error = action.error.message || "Failed to add company";
     });
 
@@ -218,7 +223,7 @@ const companySlice = createSlice({
     builder.addCase(deleteCompany.fulfilled, (state, action) => {
       state.loading = false;
       state.companies = state.companies.filter(
-        (company) => company.$id !== action.payload
+        (company:any) => company.$id !== action.payload
       ); // Remove the deleted company from the list
     });
     builder.addCase(deleteCompany.rejected, (state, action) => {

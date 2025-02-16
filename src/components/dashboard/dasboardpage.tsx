@@ -40,9 +40,9 @@ const Dashboardpage = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="charts">
+      {/* <div className="charts">
         <Dashboardchart />
-      </div>
+      </div> */}
     </div>
   );
 };

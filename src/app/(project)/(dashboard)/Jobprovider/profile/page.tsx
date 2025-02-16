@@ -41,19 +41,19 @@ const MyInformation = () => {
           {/* Company Information */}
           <div className="info rounded-md bg-[#d9d9d945] w-[400px] h-full text-left p-6 flex justify-between flex-col">
             <div className="fullinfo space-y-2">
-              <p className="capitalize">
+              <p className="">
                 Name: <span className="font-semibold">{company.name}</span>
               </p>
-              <p className="capitalize">
+              <p className="">
                 Email: <span className="font-semibold">{company.email}</span>
               </p>
-              <p className="capitalize">
+              <p className="">
                 Industry: <span className="font-semibold">{company.industry}</span>
               </p>
-              <p className="capitalize">
+              <p className="">
                 Description: <span className="font-semibold">{company.description}</span>
               </p>
-              <p className="capitalize">
+              <p className="">
                 Website:{" "}
                 <a
                   href={company.website}
@@ -64,23 +64,23 @@ const MyInformation = () => {
                   {company.website}
                 </a>
               </p>
-              <p className="capitalize">
+              <p className="">
                 Created By: <span className="font-semibold">{company.createdBy}</span>
               </p>
-              <p className="capitalize">
+              <p className="">
                 Created At: <span className="font-semibold">{new Date(company.$createdAt).toLocaleDateString()}</span>
               </p>
             </div>
 
             {/* Update Button */}
-            <div className="button mt-4">
+            {/* <div className="button mt-4">
               <Button
                 variant="secondary"
                 className="bg-[#FF0B7E] hover:bg-pink-600 text-white w-full"
               >
                 Update
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       ) : (

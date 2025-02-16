@@ -71,14 +71,14 @@ const MyInformation = () => {
             </div>
 
             {/* Update Button */}
-            <div className="button mt-4">
+            {/* <div className="button mt-4">
               <Button
                 variant="secondary"
                 className='bg-[#FF0B7E] hover:bg-pink-600 text-white w-full'
               >
                 Update
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       ) : (
