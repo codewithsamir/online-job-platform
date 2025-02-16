@@ -25,7 +25,7 @@ const router = useRouter()
 useEffect(() => {
   if (!isAuthenticated && !user) {
     dispatch(getUser()).unwrap() // Dispatch the thunk action to fetch user data
-      .catch((error) => {
+      .catch((error:any) => {
         console.error("Error fetching user data:", error);
         // toast.error("Failed to fetch user data. Please try again.");
       });

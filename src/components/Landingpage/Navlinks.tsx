@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { GiCrossedSabres } from "react-icons/gi";
 
-const Navlinks = ({close,setclose}:any) => {
+const Navlinks = ({close,setClose}:any) => {
   const Linksbtn = [
     { name: "about", link: "/" },
     { name: "skill certification", link: "/" },
@@ -24,11 +24,11 @@ const Navlinks = ({close,setclose}:any) => {
         size={30}
         onClick={()=>{
           console.log("it close")
-          setclose(false)
+          setClose(!close)
           
         }}
       />
-      {close}
+      {/* {close} */}
       {Linksbtn.map((data, index) => (
         <Link href={data.link} key={data.name}>
           <Button
