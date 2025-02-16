@@ -1,4 +1,3 @@
 {
-  "/jobs/[jobid]/page": "app/jobs/[jobid]/page.js",
   "/(project)/(Home)/page": "app/(project)/(Home)/page.js"
 }

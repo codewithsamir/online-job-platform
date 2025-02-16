@@ -15,11 +15,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(project)/(Home)/page.js"
-    ],
-    "/jobs/[jobid]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/jobs/[jobid]/page.js"
     ]
   }
 }
