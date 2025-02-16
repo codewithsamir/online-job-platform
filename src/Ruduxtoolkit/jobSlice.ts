@@ -61,8 +61,10 @@ export const fetchJobs = createAsyncThunk<JobWithCompany[], void, { rejectValue:
       const jobsWithCompany = await Promise.all(
         jobsData.map(async (job) => {
           try {
-            const companyResponse = await databases.listDocuments(db, companies, []);
-            const companyProfile = companyResponse as Company;
+            const companyResponse = await databases.listDocuments(db, companies, [
+              Query.equal("createdBy",job.postedBy)
+            ]);
+            const companyProfile = companyResponse.documents[0] as Company;
             return { ...job, companyProfile };
           } catch (error) {
             console.error(`Failed to fetch company profile for job ${job.$id}:`, error);
@@ -83,16 +85,27 @@ export const fetchJobById = createAsyncThunk<JobWithCompany, string, { rejectVal
   "jobs/fetchJobById",
   async (jobId, { rejectWithValue }) => {
     try {
+      // Fetch the job document
       const jobResponse = await databases.getDocument(db, jobs, jobId);
       const job = jobResponse as Job;
-    
-      // Fetch company profile for the job
-      // const companyResponse = await databases.getDocument(db, companies, jobId);
-      // const companyProfile = companyResponse as Company;
 
-      return { ...job };
+      // Fetch the company profile associated with the job's postedBy field
+      const companyProfileResponse = await databases.listDocuments(db, companies, [
+        Query.equal("createdBy", job.postedBy),
+      ]);
+
+      // Extract the first company profile from the response
+      const companyProfile = companyProfileResponse.documents[0]; // Assuming there's only one matching company
+
+      // Combine job and company profile data
+      const jobWithCompany: JobWithCompany = {
+        ...job,
+        companyProfile: companyProfile || null, // Include company profile or null if not found
+      };
+
+      return jobWithCompany;
     } catch (error: any) {
-      console.log(error.message)
+      console.error("Error fetching job details:", error.message);
       return rejectWithValue(error.message || "Failed to fetch job details");
     }
   }

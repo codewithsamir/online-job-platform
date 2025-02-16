@@ -6,8 +6,10 @@ export default async function createJobsCollection() {
     await databases.createCollection(db, jobs, jobs, [
         Permission.create("users"),
         Permission.read("any"),
+        Permission.read("users"),
         Permission.update("users"),
         Permission.delete("users"),
+
     ]);
     console.log("Jobs Collection Created");
 

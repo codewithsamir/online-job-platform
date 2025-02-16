@@ -11,7 +11,7 @@ const Jobsection = () => {
    useEffect(() => {
      dispatch(fetchJobs())
    }, [dispatch])
-   // console.log(jobs)
+   console.log(jobs)
 
   return (
     <section className="bg-[#2E2835] w-full h-auto px-2 py-5  sm:p-10">
@@ -19,7 +19,7 @@ const Jobsection = () => {
         Recent job
       </h1>
       <div className="job-container  flex flex-wrap justify-center gap-5">
-        {jobs.map((data)=>   <Link href={`/jobs/${data.title}_${data.$id}`} key={data.jobtitle}><Jobcard  data={data} /></Link>)}
+        {jobs.map((data)=>   <Link href={`/jobs/${data.title}_${data.$id}`} key={data.title}><Jobcard  data={data} /></Link>)}
      
       </div>
     </section>

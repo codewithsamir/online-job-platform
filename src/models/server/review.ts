@@ -7,8 +7,9 @@ export default async function createReviewsCollection() {
     await databases.createCollection(db, reviews, reviews, [
       Permission.create("users"),
       Permission.read("any"),
+      Permission.read("users"),
       Permission.update("users"),
-      Permission.delete("users"),
+      Permission.delete("users"), 
     ]);
     console.log("Reviews Collection Created");
 

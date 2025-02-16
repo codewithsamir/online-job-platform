@@ -76,3 +76,21 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.chat-history {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+}
+
+.chat-history strong {
+  color: #007BFF; /* Blue for emphasis */
+}
+
+.chat-history em {
+  color: #28A745; /* Green for italics */
+}
+
+.chat-history ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}

@@ -6,6 +6,7 @@ export default async function createCompaniesCollection() {
     await databases.createCollection(db, companies, companies, [
         Permission.create("users"),
         Permission.read("any"),
+        Permission.read("users"),
         Permission.update("users"),
         Permission.delete("users"),
     ]);

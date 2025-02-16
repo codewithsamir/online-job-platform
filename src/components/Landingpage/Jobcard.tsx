@@ -9,13 +9,14 @@ import {
 import Image from "next/image";
 import { Button } from "../ui/button";
 
-const Jobcard = ({ data, className }: any) => {
+const Jobcard = ({ data }: any) => {
+
   return (
     <Card className="w-full sm:w-[350px] p-0 overflow-hidden">
       <CardHeader className="p-0 w-full h-[250px] overflow-hidden relative">
         {/* Replace the image source with a placeholder or actual image link */}
         <Image
-          src={data?.imagelink || "/placeholder-job-image.jpg"} // Fallback image if `imagelink` is not provided
+          src={data?.companyProfile.logoUrl || "/placeholder-job-image.jpg"} // Fallback image if `imagelink` is not provided
           alt="job image"
           width={350}
           height={250}

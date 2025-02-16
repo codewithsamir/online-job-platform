@@ -1,8 +1,4 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/(project)/(Home)/page": "app/(project)/(Home)/page.js",
-  "/(project)/(dashboard)/Jobprovider/dashboard/page": "app/(project)/(dashboard)/Jobprovider/dashboard/page.js",
-  "/(project)/(dashboard)/Jobprovider/profile/page": "app/(project)/(dashboard)/Jobprovider/profile/page.js",
-  "/(project)/(dashboard)/Jobprovider/addjob/page": "app/(project)/(dashboard)/Jobprovider/addjob/page.js",
-  "/(project)/(dashboard)/Jobprovider/candidate/page": "app/(project)/(dashboard)/Jobprovider/candidate/page.js"
+  "/jobs/[jobid]/page": "app/jobs/[jobid]/page.js",
+  "/(project)/(Home)/page": "app/(project)/(Home)/page.js"
 }

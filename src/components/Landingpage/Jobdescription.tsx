@@ -16,7 +16,7 @@ import { toast } from "sonner"; // For toast notifications
 const Jobdescription = ({ data, classNames }: any) => {
   const { user } = useAppSelector((state) => state.auth);
   const [isFormOpen, setIsFormOpen] = useState(false); // State to control form visibility
-
+console.log(data)
   
 
   // Handle the "Apply" button click
@@ -30,16 +30,16 @@ const Jobdescription = ({ data, classNames }: any) => {
 
 
   const jobDescription = {
-    jobCategory: data?.jobCategory || "IT & Telecommunication", 
-    jobLevel: data?.jobLevel || "Senior Level", 
-    noOfVacancy: data?.noOfVacancy || 1, 
-    employmentType: data?.jobType || "Full Time", 
-    jobLocation: data?.location || "Kathmandu", 
-    offeredSalary: data?.salaryRange || "Negotiable", 
-    applyBefore: data?.applicationDeadline || "Oct. 12, 2024", 
+    jobCategory: data?.jobCategory , 
+    jobLevel: data?.jobLevel , 
+    noOfVacancy: data?.noOfVacancy , 
+    employmentType: data?.jobType , 
+    jobLocation: data?.location , 
+    offeredSalary: data?.salaryRange , 
+    applyBefore: data?.applicationDeadline , 
     jobSpecification: {
-      educationLevel: data?.specification?.educationLevel || "Under Graduate (Bachelor)",
-      experienceRequired: data?.specification?.experienceRequired || "8+ years",
+      educationLevel: data?.specification?.educationLevel,
+      experienceRequired: data?.specification?.experienceRequired ,
       professionalSkills: data?.specification?.professionalSkills || [], 
     },
     otherSpecifications: data?.otherSpecifications || {},
@@ -53,7 +53,7 @@ const Jobdescription = ({ data, classNames }: any) => {
       {/* Job Image */}
       <div className="image w-full h-[300px]">
         <Image
-          src={data?.imagelink || "/demo.jpg"} // Use image link from data or fallback
+          src={data?.companyProfile.logoUrl || "/demo.jpg"} // Use image link from data or fallback
           alt="job description"
           width={100}
           height={300}
@@ -87,37 +87,37 @@ const Jobdescription = ({ data, classNames }: any) => {
         <TableBody>
           <TableRow>
             <TableCell className="text-xl">
-              <strong>Job Category: </strong>{data?.jobCategory || "IT & Telecommunication"}
+              <strong>Job Category: </strong>{data?.jobCategory}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="text-xl">
-              <strong>Job Level: </strong>{data?.jobLevel || "Senior Level"}
+              <strong>Job Level: </strong>{data?.jobLevel}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="text-xl">
-              <strong>No. of Vacancies: </strong>{data?.noOfVacancy || 1}
+              <strong>No. of Vacancies: </strong>{data?.noOfVacancy }
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="text-xl">
-              <strong>Employment Type: </strong>{data?.jobType || "Full Time"}
+              <strong>Employment Type: </strong>{data?.jobType }
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="text-xl">
-              <strong>Location: </strong>{data?.location || "Kathmandu"}
+              <strong>Location: </strong>{data?.location }
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="text-xl">
-              <strong>Salary Range: </strong>{data?.salaryRange || "Negotiable"}
+              <strong>Salary Range: </strong>{data?.salaryRange }
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="text-xl">
-              <strong>Apply Before: </strong>{data?.applicationDeadline || "Oct. 12, 2024"}
+              <strong>Apply Before: </strong>{data?.applicationDeadline }
             </TableCell>
           </TableRow>
         </TableBody>
@@ -127,8 +127,8 @@ const Jobdescription = ({ data, classNames }: any) => {
       <div className="specifications">
         <h2 className="font-bold text-xl">Job Specifications</h2>
         <ul>
-          <li><strong>Education: </strong>{data?.specification?.educationLevel || "Under Graduate (Bachelor)"}</li>
-          <li><strong>Experience Required: </strong>{data?.specification?.experienceRequired || "8+ years"}</li>
+          <li><strong>Education: </strong>{data?.specification?.educationLevel }</li>
+          <li><strong>Experience Required: </strong>{data?.specification?.experienceRequired }</li>
           <li><strong>Professional Skills: </strong>{data?.specification?.professionalSkills?.join(", ") || "N/A"}</li>
         </ul>
       </div>

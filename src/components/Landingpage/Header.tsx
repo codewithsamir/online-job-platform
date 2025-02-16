@@ -16,21 +16,13 @@ const Header = () => {
   const dispatch = useAppDispatch();
 
   // Get the user from the Redux state
-  const { user,isAuthenticated } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((state) => state.auth);
 const router = useRouter()
 
 
 
 // Fetch user data if not already authenticated
-useEffect(() => {
-  if (!isAuthenticated && !user) {
-    dispatch(getUser()).unwrap() // Dispatch the thunk action to fetch user data
-      .catch((error:any) => {
-        console.error("Error fetching user data:", error);
-        // toast.error("Failed to fetch user data. Please try again.");
-      });
-  }
-}, [dispatch, isAuthenticated]);
+
   // Handle sidebar toggle
   const sidebarHandle = () => {
     setClose(!close);
