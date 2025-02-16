@@ -3,27 +3,23 @@ import { databases, storage } from "@/models/client/config"; // Import Appwrite 
 import { db, candidates, resumeBucket, ImageBucket } from "@/models/name"; // Import database and collection names
 import { Query } from "appwrite";
 
-
 // Define the candidate interface
 interface Candidate {
   total: number; // Total number of candidates
   documents: any[]; // Array of candidate objects
 }
-
 // Define the initial state
 interface CandidateState {
   candidates: Candidate[]; // Single candidate object
   loading: boolean;
   error: string | null;
 }
-
 // Initial state with proper structure
 const initialState: CandidateState = {
-candidates: [],
+  candidates: [],
   loading: false,
   error: null,
 };
-
 // Helper function to generate file URLs
 const generateFileUrl = (bucketId: string, fileId: string) => {
   return `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
@@ -38,19 +34,35 @@ export const fetchCandidates = createAsyncThunk(
       const { auth }: { auth: { user: { $id: string } } } = getState() as {
         auth: { user: { $id: string } };
       };
-
       if (!auth.user?.$id) {
         throw new Error("User not authenticated");
       }
-
       // Fetch candidates where userId matches the current user's ID
       const response = await databases.listDocuments(db, candidates, [
         Query.equal("userId", auth.user.$id),
       ]);
-
       return response; // Return the list of candidates
     } catch (error: any) {
       throw new Error(error.message || "Failed to fetch candidates");
+    }
+  }
+);
+
+// Async thunk to fetch candidates by a specific userId
+export const fetchCandidatesByUserId = createAsyncThunk(
+  "candidates/fetchCandidatesByUserId",
+  async (userId: string) => {
+    try {
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+      // Fetch candidates where userId matches the provided userId
+      const response = await databases.listDocuments(db, candidates, [
+        Query.equal("userId", userId),
+      ]);
+      return response; // Return the list of candidates
+    } catch (error: any) {
+      throw new Error(error.message || "Failed to fetch candidates by user ID");
     }
   }
 );
@@ -61,18 +73,16 @@ export const addCandidate = createAsyncThunk(
   async (candidateData: any, { getState }) => {
     try {
       // Get the current user from the Redux state
-      const { auth }: { auth: { user: { $id: string,email:string } } } = getState() as {
-        auth: { user: { $id: string,email:string } };
-      };
-
+      const { auth }: { auth: { user: { $id: string; email: string } } } =
+        getState() as {
+          auth: { user: { $id: string; email: string } };
+        };
       if (!auth.user?.$id) {
         throw new Error("User not authenticated");
       }
-
       // Add the current user's ID to the candidate data
       candidateData.userId = auth.user.$id;
       candidateData.email = auth.user.email;
-
       // Upload profile picture to the image bucket
       let profileUrl = "";
       let profileid = "";
@@ -86,19 +96,32 @@ export const addCandidate = createAsyncThunk(
         profileid = imageResponse.$id;
         profileUrl = generateFileUrl(ImageBucket, profileid); // Generate URL
       }
-    const {
-      fullName,
-      address,phone,dateofbirth,education,experience,gender,email,userId
-    } =candidateData
+      const {
+        fullName,
+        address,
+        phone,
+        dateofbirth,
+        education,
+        experience,
+        gender,
+        email,
+        userId,
+      } = candidateData;
       // Prepare candidate data with URLs and IDs
       const candidatePayload = {
         fullName,
-      address,phone,dateofbirth,education,experience,gender,email,userId,
+        address,
+        phone,
+        dateofbirth,
+        education,
+        experience,
+        gender,
+        email,
+        userId,
         profileUrl,
         profileid,
-       
       };
-console.log(candidatePayload)
+      console.log(candidatePayload);
       // Create the candidate document in the database
       const response = await databases.createDocument(
         db,
@@ -106,7 +129,6 @@ console.log(candidatePayload)
         "unique()", // Auto-generate document ID
         candidatePayload
       );
-
       return response; // Return the newly created candidate
     } catch (error: any) {
       throw new Error(error.message || "Failed to add candidate");
@@ -132,7 +154,6 @@ export const updateCandidate = createAsyncThunk(
         profilePictureid = imageResponse.$id;
         profilePictureUrl = generateFileUrl(ImageBucket, profilePictureid); // Generate URL
       }
-
       // If a new resume is uploaded, update it in the resume bucket
       let resumeUrl = data.resumeUrl;
       let resumeid = data.resumeid;
@@ -146,7 +167,6 @@ export const updateCandidate = createAsyncThunk(
         resumeid = resumeResponse.$id;
         resumeUrl = generateFileUrl(resumeBucket, resumeid); // Generate URL
       }
-
       // Prepare updated candidate data with URLs and IDs
       const updatedData = {
         ...data,
@@ -155,10 +175,13 @@ export const updateCandidate = createAsyncThunk(
         resumeUrl,
         resumeid,
       };
-
       // Update the candidate document in the database
-      const response = await databases.updateDocument(db, candidates, id, updatedData);
-
+      const response = await databases.updateDocument(
+        db,
+        candidates,
+        id,
+        updatedData
+      );
       return response; // Return the updated candidate
     } catch (error: any) {
       throw new Error(error.message || "Failed to update candidate");
@@ -197,6 +220,20 @@ const candidateSlice = createSlice({
     builder.addCase(fetchCandidates.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || "Failed to fetch candidates";
+    });
+
+    // Fetch candidates by userId
+    builder.addCase(fetchCandidatesByUserId.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchCandidatesByUserId.fulfilled, (state, action) => {
+      state.loading = false;
+      state.candidates = action.payload;
+    });
+    builder.addCase(fetchCandidatesByUserId.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || "Failed to fetch candidates by user ID";
     });
 
     // Add candidate

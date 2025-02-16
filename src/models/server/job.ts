@@ -15,8 +15,9 @@ export default async function createJobsCollection() {
 
     await Promise.all([
         databases.createStringAttribute(db, 'jobs', 'title', 250, true),
-        databases.createStringAttribute(db, 'jobs', 'description', 1000, true),
-        databases.createStringAttribute(db, 'jobs', 'specification', 1000, true),
+        databases.createStringAttribute(db, 'jobs', 'description', 4000, true),
+        databases.createStringAttribute(db, 'jobs', 'totalvacancy', 200, true),
+        databases.createStringAttribute(db, 'jobs', 'category', 200, true),
         databases.createStringAttribute(db, 'jobs', 'companyName', 250, true),
         databases.createStringAttribute(db, 'jobs', 'location', 250, true),
         databases.createStringAttribute(db, 'jobs', 'salaryRange', 100, false),

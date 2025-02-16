@@ -11,6 +11,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(project)/(Home)/layout.js"
     ],
+    "/(project)/(Home)/jobs/[jobid]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(project)/(Home)/jobs/[jobid]/page.js"
+    ],
     "/(project)/(Home)/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

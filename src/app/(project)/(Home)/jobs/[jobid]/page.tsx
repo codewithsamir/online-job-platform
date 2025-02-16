@@ -23,7 +23,7 @@ const page = ({params}:any) => {
         console.log(selectedJob)
   return (
     <div>
-        <Jobdescription data={selectedJob}  />
+        <Jobdescription data={selectedJob} classNames=" w-full p-2 md:w-[70%] mx-auto"  />
     </div>
   )
 }

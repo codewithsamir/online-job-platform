@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { z } from "zod";
@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { useAppDispatch } from "@/Ruduxtoolkit/hook";
 import { addJob } from "@/Ruduxtoolkit/jobSlice"; // Import jobSlice action
 import { toast } from "sonner"; // For toast notifications
+import Textedito from "./TextEditor";
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -31,8 +32,11 @@ const formSchema = z.object({
   description: z.string().min(10, {
     message: "Description must be at least 10 characters long.",
   }),
-  specification: z.string().min(10, {
-    message: "specification must be at least 10 characters long.",
+  category: z.string().min(10, {
+    message: "category must be at least 2 characters long.",
+  }),
+  totalvacancy: z.string().min(10, {
+    message: "totalvacancy must be at least 1 characters long.",
   }),
   companyName: z.string().min(2, {
     message: "Company name must be at least 2 characters long.",
@@ -56,18 +60,20 @@ const JobForm = () => {
   const [applicationDeadline, setApplicationDeadline] = React.useState<Date | undefined>(undefined); // Application deadline state
   const [isLoading, setIsLoading] = React.useState(false); // Loading state
   const dispatch = useAppDispatch();
+  const [content, setContent] = useState("")
 
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      description: "",
+      description: content,
       companyName: "",
       location: "",
       salaryRange: "",
       jobType: undefined,
-      specification:"",
+      category:"",
+      totalvacancy:"",
       applicationDeadline: "",
       isActive: true,
     },
@@ -95,7 +101,7 @@ const JobForm = () => {
   };
 
   return (
-    <div className="bg-[#5b3e8141] text-white p-6 rounded-lg w-[600px] mx-auto">
+    <div className="bg-[#5b3e8141] text-white p-6 rounded-lg w-full md:w-[80%] mx-auto">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -105,8 +111,9 @@ const JobForm = () => {
           <FormField
             control={form.control}
             name="title"
+            
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-2 w-full">
                 <FormLabel>Title</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter job title" {...field} />
@@ -115,35 +122,10 @@ const JobForm = () => {
               </FormItem>
             )}
           />
+<div className="col-span-2 w-full">
 
-          {/* Description */}
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter job description" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Description */}
-          <FormField
-            control={form.control}
-            name="specification"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Specification</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter job specification" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <Textedito content={content} setContent={setContent} />
+</div>
 
           {/* Company Name */}
           <FormField
@@ -184,6 +166,34 @@ const JobForm = () => {
                 <FormLabel>Salary Range</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter salary range (optional)" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* totalvacancy */}
+          <FormField
+            control={form.control}
+            name="totalvacancy"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Total vacancy</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter totalvacancy" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* category */}
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>category</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter category" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

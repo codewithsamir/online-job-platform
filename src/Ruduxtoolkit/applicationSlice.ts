@@ -19,6 +19,7 @@ interface ApplicationState {
   applicationsByCandidate: Application[]; // Applications filtered by candidate ID
   applicationsByJob: Application[]; // Applications filtered by job ID
   loading: boolean;
+  isupdate: boolean;
   error: string | null;
 }
 
@@ -27,6 +28,7 @@ const initialState: ApplicationState = {
   applicationsByCandidate: [],
   applicationsByJob: [],
   loading: false,
+  isupdate:false,
   error: null,
 };
 
@@ -139,8 +141,9 @@ export const updateApplication = createAsyncThunk(
     data,
   }: {
     id: string;
-    data: Partial<Omit<Application, "$id" | "resumeUrl" | "resumeId">> & {
+    data: Partial<Omit<Application, "$id" | "resumeUrl" | "resumeId" >> & {
       resumeFile?: File; // Optional new resume file
+      status?:string
     },
   }) => {
     try {
@@ -164,7 +167,7 @@ export const updateApplication = createAsyncThunk(
       };
       // Update the application document in the database
       const response = await databases.updateDocument(db, applications, id, updatedData);
-      return response as Application; // Return the updated application
+      return response as  Application; // Return the updated application
     } catch (error: any) {
       throw new Error(error.message || "Failed to update application");
     }
@@ -236,10 +239,13 @@ const applicationSlice = createSlice({
     builder.addCase(updateApplication.pending, (state) => {
       state.loading = true;
       state.error = null;
+      state.isupdate = false;
     });
     builder.addCase(updateApplication.fulfilled, (state, action) => {
       state.loading = false;
       const updatedApplication = action.payload;
+      state.isupdate = true;
+
       state.applicationsByCandidate = state.applicationsByCandidate.map((app) =>
         app.$id === updatedApplication.$id ? updatedApplication : app
       ); // Replace the updated application in the list

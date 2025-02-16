@@ -1,10 +1,12 @@
 "use client";
 import Dashboardcard from "@/components/dashboard/dashboardcard";
 import Dashboardtable from "@/components/dashboard/dashboradTable";
+import { fetchApplicationsByJob } from "@/Ruduxtoolkit/applicationSlice";
+import { fetchCandidatesByUserId } from "@/Ruduxtoolkit/candidateSlice";
+import { fetchJobsByUser } from "@/Ruduxtoolkit/jobSlice";
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook";
-import { fetchJobsByUser, fetchApplicationsByJob, fetchCandidateById } from "@/Ruduxtoolkit/jobSlice";
 import React, { useEffect, useState } from "react";
-
+  
 const Dashboardpage = () => {
   const dispatch = useAppDispatch();
   const { userJobs, loading: jobsLoading } = useAppSelector((state) => state.job);
@@ -24,12 +26,13 @@ const Dashboardpage = () => {
 
               // Fetch candidate details for each application
               const applicants = await Promise.all(
-                applications.map(async (app) => {
-                  const candidate = await dispatch(fetchCandidateById(app.candidateId)).unwrap();
+                applications.map(async (app:any) => {
+                  const candidate = await dispatch(fetchCandidatesByUserId(app.candidateId)).unwrap();
+                  // console.log(candidate)
                   return {
-                    applicantName: candidate?.name || "Unknown",
+                    applicantName: candidate?.documents[0].fullName || "Unknown",
                     status: app.status || "Pending",
-                    email: candidate?.email || "N/A", // Add additional candidate details if needed
+                    email: candidate?.documents[0].email || "N/A", // Add additional candidate details if needed
                   };
                 })
               );

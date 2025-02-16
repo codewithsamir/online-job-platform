@@ -2,18 +2,17 @@
 import DashboardTable from "@/components/dashboard/dashboradTable";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook";
-import {
-  fetchJobsByUser,
- 
-} from "@/Ruduxtoolkit/jobSlice";
 import { fetchApplicationsByJob } from "@/Ruduxtoolkit/applicationSlice";
-import { fetchCandidates } from "@/Ruduxtoolkit/candidateSlice";
+import { fetchCandidatesByUserId } from "@/Ruduxtoolkit/candidateSlice";
+import { fetchJobsByUser } from "@/Ruduxtoolkit/jobSlice";
+
 
 
 const AppliedJobsPage = () => {
   const dispatch = useAppDispatch();
-  const [jobsWithCandidates, setJobsWithCandidates] = useState<any[]>([]);
+  const [jobsWithCandidates, setJobsWithCandidates,] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+const {isupdate} = useAppSelector((state) => state.application);
 
   useEffect(() => {
     // Fetch jobs posted by the user
@@ -25,32 +24,35 @@ const AppliedJobsPage = () => {
 
         // Step 2: Fetch applications and candidates for each job
         const jobsData = await Promise.all(
-          jobs.map(async (job) => {
+          jobs.map(async (job,index) => {
             // Fetch applications for the current job
             const applicationsResponse = await dispatch(fetchApplicationsByJob(job.$id)).unwrap();
             const jobApplications = applicationsResponse as any[];
-
+            
             // Fetch candidate details for each application
             const candidates = await Promise.all(
               jobApplications.map(async (application) => {
-                const candidateResponse = await dispatch(fetchCandidateById(application.candidateId)).unwrap();
+                const candidateResponse = await dispatch(fetchCandidatesByUserId(application.candidateId)).unwrap();
                 const candidate = candidateResponse as any;
+                
                 return {
                   ...application,
-                  candidateName: candidate?.name || "Unknown",
-                  candidateEmail: candidate?.email || "N/A",
+                  candidateName: candidate?.documents[0].fullName || "Unknown",
+                  candidateEmail: candidate?.documents[0].email || "N/A",
                 };
               })
             );
 
             return {
               ...job,
-              candidates,
+              ...candidates[0],
+              totalcandidate :candidates.length
             };
           })
         );
 
         setJobsWithCandidates(jobsData);
+        // console.log(jobsData)
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -59,16 +61,17 @@ const AppliedJobsPage = () => {
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [dispatch,isupdate]);
 
   // Define table columns
   const columns = [
-    { header: "Job Title", accessor: "title" },
-    { header: "Company", accessor: "company" },
-    { header: "Location", accessor: "location" },
-    { header: "Candidate Name", accessor: "candidateName" },
-    { header: "Candidate Email", accessor: "candidateEmail" },
-    { header: "Application Status", accessor: "status" },
+    { header: "Job Title", accessor: "title",className:"text-white" },
+    { header: "Company", accessor: "companyName",className:"text-white"  },
+    { header: "Location", accessor: "location",className:"text-white"  },
+    { header: "Candidate Name", accessor: "candidateName" ,className:"text-white" },
+    { header: "Candidate Email", accessor: "candidateEmail",className:"text-white"  },
+    { header: "Resume", accessor: "resumeUrl",className:"text-blue-500 cursor-pointer"  },
+    { header: "Application Status", accessor: "status",className:"text-white"  },
   ];
 
   return (
@@ -91,9 +94,11 @@ const AppliedJobsPage = () => {
             <DashboardTable
               caption={`Candidates who applied for "${job.title}"`}
               columns={columns}
-              data={job.candidates}
+              data={job.totalcandidate === 0 ? [] : job}
+              action={true}
+              
             />
-            {job.candidates.length === 0 && (
+            {job.totalcandidate === 0 && (
               <div className="w-full bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
                 No candidates have applied to this job yet.
               </div>

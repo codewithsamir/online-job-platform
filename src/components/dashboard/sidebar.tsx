@@ -11,7 +11,7 @@ const Sidebar = ({ menu }: any) => {
 
   return (
     <aside>
-      <div className="p-4 bg-[#5B3E81] min-h-screen py-10 w-[250px] sticky top-10 left-0">
+      <div className="p-4 bg-[#5B3E81] min-h-screen py-10 w-[250px] sticky top-10  left-0 ">
         {menu.map((m: string) => {
           const normalizedMenuItem = m.toLowerCase().replace(/\s+/g, ""); // Normalize the menu item
           return (

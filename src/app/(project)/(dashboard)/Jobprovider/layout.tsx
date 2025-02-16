@@ -37,7 +37,7 @@ const layout = ({
     {/* Main Content */}
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div className="w-[250px] bg-[#af8dff48] ">
+      <div className="w-[250px] h-full bg-[#af8dff48] ">
         <Sidebar menu={menu} />
       </div>
 
