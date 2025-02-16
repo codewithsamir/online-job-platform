@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "../ui/button";
-
+import parse from 'html-react-parser'; // Import HTML parser
 const Jobcard = ({ data }: any) => {
 
   return (
@@ -23,13 +23,20 @@ const Jobcard = ({ data }: any) => {
           className="w-full h-full object-cover"
         />
         <Button className="bg-[#d83f8696] hover:bg-[#D83F87] hover:text-white absolute top-2 left-2">
-          {data?.jobType || "Full-time"} {/* Display job type or a default value */}
+          {data?.jobType } {/* Display job type or a default value */}
         </Button>
       </CardHeader>
       <CardContent className="py-2">
         <CardTitle className="text-xl mb-2">{data?.title}</CardTitle>
         <CardDescription className="text-lg">
-          {data?.description?.slice(0, 50)}... {/* Display first 50 characters of the description */}
+        {/* {data?.description ? parse(data.description.slice(0, 50)) : ""} */}
+        {data?.category}
+ {/* Display first 50 characters of the description */}
+        </CardDescription>
+        <CardDescription className="text-lg">
+        {/* {data?.description ? parse(data.description.slice(0, 50)) : ""} */}
+      {data?.salaryRange}
+ {/* Display first 50 characters of the description */}
         </CardDescription>
       </CardContent>
       <CardFooter className="flex justify-center my-2 w-full">

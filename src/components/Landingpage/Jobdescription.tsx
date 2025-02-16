@@ -24,9 +24,9 @@ const Jobdescription = ({ data, classNames }: any) => {
       {/* Job Image */}
       <div className="image w-full h-[300px]">
         <Image
-          src={data?.companyProfile?.logoUrl || "/demo.jpg"} // Use image link from data or fallback
+          src={data?.companyProfile?.logoUrl} // Use image link from data or fallback
           alt="job description"
-          width={100}
+          width={1000}
           height={300}
           className="w-full h-full object-cover object-center"
         />

@@ -20,7 +20,7 @@ export default async function createJobsCollection() {
         databases.createStringAttribute(db, 'jobs', 'category', 200, true),
         databases.createStringAttribute(db, 'jobs', 'companyName', 250, true),
         databases.createStringAttribute(db, 'jobs', 'location', 250, true),
-        databases.createStringAttribute(db, 'jobs', 'salaryRange', 100, false),
+        databases.createStringAttribute(db, 'jobs', 'salaryRange', 200, false),
         databases.createStringAttribute(db, 'jobs', 'jobType', 100, true),
         databases.createStringAttribute(db, 'jobs', 'postedBy', 100, true),
         databases.createStringAttribute(db, 'jobs', 'postedDate', 100, true),
