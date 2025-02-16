@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import {
   Table,
@@ -79,7 +80,7 @@ export default function DashboardTable({
                         className={`px-3 py-1 rounded-md ${
                           row[column.accessor] === "Pending"
                             ? "bg-yellow-500 text-white"
-                            : row[column.accessor] === "Confirmed"
+                            : row[column.accessor] === "Accepted"
                             ? "bg-green-500 text-white"
                             : "bg-red-500 text-white"
                         }`}

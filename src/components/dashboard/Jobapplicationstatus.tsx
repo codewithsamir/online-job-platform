@@ -49,7 +49,7 @@ export default function JobApplicationStatus({
             onChange={(e) => setStatus(e.target.value)}
           >
             <option value="Pending">Pending</option>
-            <option value="Confirmed">Confirmed</option>
+            <option value="Confirmed">Accepted</option>
             <option value="Cancelled">Cancelled</option>
           </select>
           <div className="flex justify-end space-x-2">
