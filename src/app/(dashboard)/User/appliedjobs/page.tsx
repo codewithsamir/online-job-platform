@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/Ruduxtoolkit/hook'
 import React from 'react'
 
 const page = () => {
-  const {applications} = useAppSelector(state=>state.application)
+  const {applicationsByCandidate} = useAppSelector(state=>state.application)
 
   return (
     <div>
@@ -14,7 +14,7 @@ const page = () => {
              {/* Table Section */}
                   <div className="table w-full">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">Applied Jobs</h2>
-                    {applications.length > 0 ? (
+                    {applicationsByCandidate.length > 0 ? (
                       <Dashboardtable
                         caption="List of jobs you have applied to."
                         columns={[
@@ -22,7 +22,7 @@ const page = () => {
                           { header: "Company", accessor: "company" },
                           { header: "Status", accessor: "status" },
                         ]}
-                        data={applications}
+                        data={applicationsByCandidate}
                       />
                     ) : (
                       <div className="w-full bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
