@@ -14,6 +14,7 @@ export interface Candidate {
   experience?: string;
   gender?: string;
   email: string;
+  skills:string;
   userId: string; // User ID of the creator
   profileUrl?: string; // URL of the profile picture
   profileid?: string; // ID of the uploaded profile picture file
@@ -59,6 +60,7 @@ const mapDocumentToCandidate = (doc: any): Candidate => ({
   gender: doc.gender || "",
   email: doc.email,
   userId: doc.userId,
+  skills:doc.skills,
   profileUrl: doc.profileUrl || "",
   profileid: doc.profileid || "",
   resumeUrl: doc.resumeUrl || "",

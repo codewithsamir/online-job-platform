@@ -51,7 +51,7 @@ console.log(candidates)
             <p className="text-white">Loading...</p>
           ) : !user?.emailVerification ? (
             <Confirmemail />
-          ) : candidates?.total > 0 ? (
+          ) : candidates?.length > 0 ? (
             children
           ) : (
             <UserProfileform />

@@ -6,7 +6,7 @@ import { fetchCandidatesByUserId } from "@/Ruduxtoolkit/candidateSlice";
 import { fetchJobsByUser } from "@/Ruduxtoolkit/jobSlice";
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook";
 import React, { useEffect, useState } from "react";
-  
+
 const Dashboardpage = () => {
   const dispatch = useAppDispatch();
   const { userJobs, loading: jobsLoading } = useAppSelector((state) => state.job);
@@ -19,20 +19,22 @@ const Dashboardpage = () => {
       if (userJobs.length > 0) {
         // Fetch applications for each job and get candidate details
         const jobsData = await Promise.all(
-          userJobs.map(async (job:any) => {
+          userJobs.map(async (job: any) => {
             try {
               // Fetch applications for the specific job ID
               const applications = await dispatch(fetchApplicationsByJob(job.$id)).unwrap();
 
               // Fetch candidate details for each application
               const applicants = await Promise.all(
-                applications.map(async (app:any) => {
-                  const candidate = await dispatch(fetchCandidatesByUserId(app.candidateId)).unwrap();
-                  // console.log(candidate)
+                applications.map(async (app: any) => {
+                  const candidates = await dispatch(fetchCandidatesByUserId(app.candidateId)).unwrap();
+                  // Find the first candidate in the array (assuming there's only one per ID)
+                  const candidate = candidates?.[0];
+
                   return {
-                    applicantName: candidate?.documents[0].fullName || "Unknown",
+                    applicantName: candidate?.fullName || "Unknown",
                     status: app.status || "Pending",
-                    email: candidate?.documents[0].email || "N/A", // Add additional candidate details if needed
+                    email: candidate?.email || "N/A", // Add additional candidate details if needed
                   };
                 })
               );
@@ -41,7 +43,7 @@ const Dashboardpage = () => {
                 ...job,
                 applicants,
               };
-            } catch (error:any) {
+            } catch (error: any) {
               console.error(`Failed to fetch data for job ${job.$id}:`, error);
               return {
                 ...job,
@@ -68,13 +70,18 @@ const Dashboardpage = () => {
         <Dashboardcard
           content="Total Applications"
           className="bg-orange-400"
-          contentdata={jobsWithApplicants.reduce((total:any, job:any) => total + job.applicants.length, 0)}
+          contentdata={jobsWithApplicants.reduce(
+            (total, job) => total + job.applicants.length,
+            0
+          )}
         />
         <Dashboardcard
           content="Selected Candidates"
           className="bg-green-600"
           contentdata={jobsWithApplicants.reduce(
-            (total, job) => total + job.applicants.filter((app:any) => app.status === "Accepted").length,
+            (total, job) =>
+              total +
+              job.applicants.filter((app: any) => app.status === "Accepted").length,
             0
           )}
         />
@@ -86,7 +93,7 @@ const Dashboardpage = () => {
         {loading ? (
           <p className="text-center text-white">Loading...</p>
         ) : jobsWithApplicants.length > 0 ? (
-          jobsWithApplicants.map((job:any, index:any) => (
+          jobsWithApplicants.map((job: any, index: number) => (
             <div key={index} className="mb-6">
               <h3 className="text-lg font-semibold text-white mb-2">{job.title}</h3>
               <Dashboardtable

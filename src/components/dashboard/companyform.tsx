@@ -55,7 +55,14 @@ const dispatch = useAppDispatch()
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true); // Start loading
     try {
-      const res = await    dispatch(addCompany(values))
+      const companyData:any = {
+        name: values.name,
+        description: values.description,
+        industry: values.industry,
+        website: values.website,
+        logoUrl: values.logoUrl || undefined, // Pass the File object here
+      };
+      const res = await    dispatch(addCompany(companyData))
       console.log(res)
       dispatch(fetchCompanies());
 

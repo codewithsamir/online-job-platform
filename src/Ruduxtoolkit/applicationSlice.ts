@@ -28,32 +28,41 @@ const initialState: ApplicationState = {
   applicationsByCandidate: [],
   applicationsByJob: [],
   loading: false,
-  isupdate:false,
+  isupdate: false,
   error: null,
 };
 
 // Helper function to generate file URLs
-const generateFileUrl = (bucketId: string, fileId: string) => {
+const generateFileUrl = (bucketId: string, fileId: string): string => {
   return `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 };
 
+// Helper function to map Document to Application
+const mapDocumentToApplication = (doc: any): Application => ({
+  $id: doc.$id,
+  jobId: doc.jobId,
+  candidateId: doc.candidateId,
+  resumeUrl: doc.resumeUrl || "",
+  resumeId: doc.resumeId || "",
+  applicationDate: doc.applicationDate || "",
+  status: doc.status || "Pending",
+});
+
 // Async thunk to fetch all applications for the current user (by candidateId)
-export const fetchApplicationsByCandidate = createAsyncThunk(
+export const fetchApplicationsByCandidate = createAsyncThunk<Application[], void>(
   "applications/fetchApplicationsByCandidate",
   async (_, { getState }) => {
     try {
-      // Get the current user from the Redux state
       const { auth }: { auth: { user: { $id: string } } } = getState() as {
         auth: { user: { $id: string } };
       };
       if (!auth.user?.$id) {
         throw new Error("User not authenticated");
       }
-      // Fetch applications where candidateId matches the current user's ID
       const response = await databases.listDocuments(db, applications, [
         Query.equal("candidateId", auth.user.$id),
       ]);
-      return response.documents as Application[];
+      return response.documents.map(mapDocumentToApplication); // Map to Application type
     } catch (error: any) {
       throw new Error(error.message || "Failed to fetch applications by candidate");
     }
@@ -61,15 +70,14 @@ export const fetchApplicationsByCandidate = createAsyncThunk(
 );
 
 // Async thunk to fetch applications for a specific job (by jobId)
-export const fetchApplicationsByJob = createAsyncThunk(
+export const fetchApplicationsByJob = createAsyncThunk<Application[], string>(
   "applications/fetchApplicationsByJob",
   async (jobId: string) => {
     try {
-      // Fetch applications where jobId matches the provided jobId
       const response = await databases.listDocuments(db, applications, [
         Query.equal("jobId", jobId),
       ]);
-      return response.documents as Application[];
+      return response.documents.map(mapDocumentToApplication); // Map to Application type
     } catch (error: any) {
       throw new Error(error.message || "Failed to fetch applications by job");
     }
@@ -77,24 +85,18 @@ export const fetchApplicationsByJob = createAsyncThunk(
 );
 
 // Async thunk to add a new application
-export const addApplication = createAsyncThunk(
+export const addApplication = createAsyncThunk<Application, Partial<Application> & { resumeFile?: File }>(
   "applications/addApplication",
-  async (
-    applicationData: Omit<Application, "$id" | "resumeUrl" | "resumeId"> & {
-      resumeFile?: File; // Resume file to upload
-    },
-    { getState }
-  ) => {
+  async (applicationData, { getState }) => {
     try {
-      // Get the current user from the Redux state
       const { auth }: { auth: { user: { $id: string } } } = getState() as {
         auth: { user: { $id: string } };
       };
       if (!auth.user?.$id) {
         throw new Error("User not authenticated");
       }
-      // Add the current user's ID as the candidateId
       applicationData.candidateId = auth.user.$id;
+
       // Upload resume file to the resume bucket
       let resumeUrl = "";
       let resumeId = "";
@@ -107,13 +109,10 @@ export const addApplication = createAsyncThunk(
         resumeId = resumeResponse.$id;
         resumeUrl = generateFileUrl(resumeBucket, resumeId); // Generate URL
       }
-      const { applicationDate, candidateId, jobId } = applicationData;
 
       // Prepare application data with URLs and IDs
       const applicationPayload = {
-        applicationDate,
-        candidateId,
-        jobId,
+        ...applicationData,
         resumeUrl,
         resumeId,
         status: "Pending", // Default status
@@ -126,7 +125,7 @@ export const addApplication = createAsyncThunk(
         "unique()", // Auto-generate document ID
         applicationPayload
       );
-      return response as Application; // Return the newly created application
+      return mapDocumentToApplication(response); // Map to Application type
     } catch (error: any) {
       throw new Error(error.message || "Failed to add application");
     }
@@ -134,18 +133,9 @@ export const addApplication = createAsyncThunk(
 );
 
 // Async thunk to update an application
-export const updateApplication = createAsyncThunk(
+export const updateApplication = createAsyncThunk<Application, { id: string; data: Partial<Application> & { resumeFile?: File } }>(
   "applications/updateApplication",
-  async ({
-    id,
-    data,
-  }: {
-    id: string;
-    data: Partial<Omit<Application, "$id" | "resumeUrl" | "resumeId" >> & {
-      resumeFile?: File; // Optional new resume file
-      status?:string
-    },
-  }) => {
+  async ({ id, data }) => {
     try {
       // If a new resume is uploaded, update it in the resume bucket
       let resumeUrl = data.resumeUrl;
@@ -159,15 +149,17 @@ export const updateApplication = createAsyncThunk(
         resumeId = resumeResponse.$id;
         resumeUrl = generateFileUrl(resumeBucket, resumeId); // Generate URL
       }
+
       // Prepare updated application data with URLs and IDs
       const updatedData = {
         ...data,
         resumeUrl,
         resumeId,
       };
+
       // Update the application document in the database
       const response = await databases.updateDocument(db, applications, id, updatedData);
-      return response as  Application; // Return the updated application
+      return mapDocumentToApplication(response); // Map to Application type
     } catch (error: any) {
       throw new Error(error.message || "Failed to update application");
     }
@@ -175,7 +167,7 @@ export const updateApplication = createAsyncThunk(
 );
 
 // Async thunk to delete an application
-export const deleteApplication = createAsyncThunk(
+export const deleteApplication = createAsyncThunk<string, string>(
   "applications/deleteApplication",
   async (id: string) => {
     try {
@@ -243,14 +235,12 @@ const applicationSlice = createSlice({
     });
     builder.addCase(updateApplication.fulfilled, (state, action) => {
       state.loading = false;
-      const updatedApplication = action.payload;
       state.isupdate = true;
-
       state.applicationsByCandidate = state.applicationsByCandidate.map((app) =>
-        app.$id === updatedApplication.$id ? updatedApplication : app
+        app.$id === action.payload.$id ? action.payload : app
       ); // Replace the updated application in the list
       state.applicationsByJob = state.applicationsByJob.map((app) =>
-        app.$id === updatedApplication.$id ? updatedApplication : app
+        app.$id === action.payload.$id ? action.payload : app
       ); // Replace the updated application in the list
     });
     builder.addCase(updateApplication.rejected, (state, action) => {

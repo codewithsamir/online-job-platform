@@ -13,7 +13,6 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { toast } from "sonner"; // For toast notifications
 import { useAppDispatch } from "@/Ruduxtoolkit/hook";
 import { addApplication } from "@/Ruduxtoolkit/applicationSlice"; // Import applicationSlice action
@@ -34,7 +33,8 @@ const formSchema = z.object({
       message: "Resume file size must be less than 5MB.",
     })
     .refine(
-      (file) => ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(file.type),
+      (file) =>
+        ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(file.type),
       {
         message: "Only PDF, DOC, or DOCX files are allowed.",
       }
@@ -42,10 +42,9 @@ const formSchema = z.object({
   applicationDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
     message: "Application date must be in YYYY-MM-DD format.",
   }),
- 
 });
 
-const ApplicationForm = ({ jobId,userid, onClose }: { jobId: string; userid:string; onClose: () => void }) => {
+const ApplicationForm = ({ jobId, userid, onClose }: { jobId: string; userid: string | undefined; onClose: () => void }) => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -54,10 +53,9 @@ const ApplicationForm = ({ jobId,userid, onClose }: { jobId: string; userid:stri
     resolver: zodResolver(formSchema),
     defaultValues: {
       jobId: jobId, // Pre-fill the job ID
-      candidateId: userid,
+      candidateId: userid, // Pre-fill the candidate ID
       resumeFile: undefined,
       applicationDate: new Date().toISOString().split("T")[0], // Today's date
-     
     },
   });
 
@@ -65,7 +63,6 @@ const ApplicationForm = ({ jobId,userid, onClose }: { jobId: string; userid:stri
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-    
 
       // Dispatch the addApplication action
       await dispatch(addApplication(values)).unwrap();
@@ -129,8 +126,6 @@ const ApplicationForm = ({ jobId,userid, onClose }: { jobId: string; userid:stri
             </FormItem>
           )}
         />
-
-       
 
         {/* Submit Button */}
         <Button type="submit" disabled={isLoading}>

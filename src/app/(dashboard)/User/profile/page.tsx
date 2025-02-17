@@ -8,7 +8,7 @@ const MyInformation = () => {
   const { candidates, loading } = useAppSelector((state) => state.candidate);
 
   // Extract the first candidate document (if available)
-  const candidate = candidates?.documents?.[0];
+  const candidate = candidates?.[0];
 
   return (
     <div>
