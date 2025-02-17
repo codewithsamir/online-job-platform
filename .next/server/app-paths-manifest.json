@@ -1,9 +1,0 @@
-{
-  "/(auth)/verifyemail/page": "app/(auth)/verifyemail/page.js",
-  "/(Home)/jobs/[jobid]/page": "app/(Home)/jobs/[jobid]/page.js",
-  "/(Home)/page": "app/(Home)/page.js",
-  "/(dashboard)/Jobprovider/addjob/page": "app/(dashboard)/Jobprovider/addjob/page.js",
-  "/(dashboard)/Jobprovider/profile/page": "app/(dashboard)/Jobprovider/profile/page.js",
-  "/(dashboard)/Jobprovider/dashboard/page": "app/(dashboard)/Jobprovider/dashboard/page.js",
-  "/(dashboard)/Jobprovider/candidate/page": "app/(dashboard)/Jobprovider/candidate/page.js"
-}
