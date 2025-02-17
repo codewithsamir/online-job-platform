@@ -22,7 +22,7 @@ export const sendEmailVerify = createAsyncThunk(
   "verifyemail/sendEmailVerify",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await account.createVerification("http://localhost:3000/verifyemail");
+      const response = await account.createVerification("https://online-job-platform.vercel.app/verifyemail");
       return response;
     } catch (error: any) {
       console.error(error);
