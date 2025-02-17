@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Storewrap from "@/components/Landingpage/Storewrap";
-
+import { Analytics } from "@vercel/analytics/react"
 
 
 const geistSans = localFont({
@@ -37,6 +37,7 @@ export default function RootLayout({
       >
       <Storewrap>
       <Toaster position="top-right" richColors />
+      <Analytics/>
         {children}
         </Storewrap>
       
