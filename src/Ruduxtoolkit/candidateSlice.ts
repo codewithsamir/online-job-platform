@@ -3,45 +3,84 @@ import { databases, storage } from "@/models/client/config"; // Import Appwrite 
 import { db, candidates, resumeBucket, ImageBucket } from "@/models/name"; // Import database and collection names
 import { Query } from "appwrite";
 
-// Define the candidate interface
-interface Candidate {
-  total: number; // Total number of candidates
-  documents: any[]; // Array of candidate objects
+// Define the Candidate interface
+export interface Candidate {
+  $id: string; // Unique ID of the candidate
+  fullName: string;
+  address?: string;
+  phone?: string;
+  dateofbirth?: string;
+  education?: string;
+  experience?: string;
+  gender?: string;
+  email: string;
+  userId: string; // User ID of the creator
+  profileUrl?: string; // URL of the profile picture
+  profileid?: string; // ID of the uploaded profile picture file
+  resumeUrl?: string; // URL of the resume
+  resumeid?: string; // ID of the uploaded resume file
+  $createdAt?: string; // Creation timestamp
 }
+
+// Define an extended type for candidate input data (includes temporary file properties)
+export interface CandidateInput extends Partial<Candidate> {
+  image?: File; // Temporary property for profile picture upload
+  resume?: File; // Temporary property for resume upload
+}
+
 // Define the initial state
 interface CandidateState {
-  candidates: Candidate[]; // Single candidate object
+  candidates: Candidate[]; // Array of candidate objects
   loading: boolean;
   error: string | null;
 }
+
 // Initial state with proper structure
 const initialState: CandidateState = {
   candidates: [],
   loading: false,
   error: null,
 };
+
 // Helper function to generate file URLs
-const generateFileUrl = (bucketId: string, fileId: string) => {
+const generateFileUrl = (bucketId: string, fileId: string): string => {
   return `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 };
 
+// Helper function to map Document to Candidate
+const mapDocumentToCandidate = (doc: any): Candidate => ({
+  $id: doc.$id,
+  fullName: doc.fullName,
+  address: doc.address || "",
+  phone: doc.phone || "",
+  dateofbirth: doc.dateofbirth || "",
+  education: doc.education || "",
+  experience: doc.experience || "",
+  gender: doc.gender || "",
+  email: doc.email,
+  userId: doc.userId,
+  profileUrl: doc.profileUrl || "",
+  profileid: doc.profileid || "",
+  resumeUrl: doc.resumeUrl || "",
+  resumeid: doc.resumeid || "",
+  $createdAt: doc.$createdAt || "",
+});
+
 // Async thunk to fetch all candidates for the current user
-export const fetchCandidates = createAsyncThunk(
+export const fetchCandidates = createAsyncThunk<Candidate[], void>(
   "candidates/fetchCandidates",
   async (_, { getState }) => {
     try {
-      // Get the current user from the Redux state
       const { auth }: { auth: { user: { $id: string } } } = getState() as {
         auth: { user: { $id: string } };
       };
       if (!auth.user?.$id) {
         throw new Error("User not authenticated");
       }
-      // Fetch candidates where userId matches the current user's ID
       const response = await databases.listDocuments(db, candidates, [
         Query.equal("userId", auth.user.$id),
       ]);
-      return response; // Return the list of candidates
+      return response.documents.map(mapDocumentToCandidate); // Map to Candidate type
     } catch (error: any) {
       throw new Error(error.message || "Failed to fetch candidates");
     }
@@ -49,18 +88,17 @@ export const fetchCandidates = createAsyncThunk(
 );
 
 // Async thunk to fetch candidates by a specific userId
-export const fetchCandidatesByUserId = createAsyncThunk(
+export const fetchCandidatesByUserId = createAsyncThunk<Candidate[], string>(
   "candidates/fetchCandidatesByUserId",
   async (userId: string) => {
     try {
       if (!userId) {
         throw new Error("User ID is required");
       }
-      // Fetch candidates where userId matches the provided userId
       const response = await databases.listDocuments(db, candidates, [
         Query.equal("userId", userId),
       ]);
-      return response; // Return the list of candidates
+      return response.documents.map(mapDocumentToCandidate); // Map to Candidate type
     } catch (error: any) {
       throw new Error(error.message || "Failed to fetch candidates by user ID");
     }
@@ -68,11 +106,10 @@ export const fetchCandidatesByUserId = createAsyncThunk(
 );
 
 // Async thunk to add a new candidate
-export const addCandidate = createAsyncThunk(
+export const addCandidate = createAsyncThunk<Candidate, CandidateInput>(
   "candidates/addCandidate",
-  async (candidateData: any, { getState }) => {
+  async (candidateData: CandidateInput, { getState }) => {
     try {
-      // Get the current user from the Redux state
       const { auth }: { auth: { user: { $id: string; email: string } } } =
         getState() as {
           auth: { user: { $id: string; email: string } };
@@ -80,9 +117,9 @@ export const addCandidate = createAsyncThunk(
       if (!auth.user?.$id) {
         throw new Error("User not authenticated");
       }
-      // Add the current user's ID to the candidate data
       candidateData.userId = auth.user.$id;
       candidateData.email = auth.user.email;
+
       // Upload profile picture to the image bucket
       let profileUrl = "";
       let profileid = "";
@@ -96,32 +133,14 @@ export const addCandidate = createAsyncThunk(
         profileid = imageResponse.$id;
         profileUrl = generateFileUrl(ImageBucket, profileid); // Generate URL
       }
-      const {
-        fullName,
-        address,
-        phone,
-        dateofbirth,
-        education,
-        experience,
-        gender,
-        email,
-        userId,
-      } = candidateData;
+
       // Prepare candidate data with URLs and IDs
       const candidatePayload = {
-        fullName,
-        address,
-        phone,
-        dateofbirth,
-        education,
-        experience,
-        gender,
-        email,
-        userId,
+        ...candidateData,
         profileUrl,
         profileid,
       };
-      console.log(candidatePayload);
+
       // Create the candidate document in the database
       const response = await databases.createDocument(
         db,
@@ -129,7 +148,7 @@ export const addCandidate = createAsyncThunk(
         "unique()", // Auto-generate document ID
         candidatePayload
       );
-      return response; // Return the newly created candidate
+      return response as unknown as Candidate; // Explicitly cast to Candidate
     } catch (error: any) {
       throw new Error(error.message || "Failed to add candidate");
     }
@@ -137,13 +156,13 @@ export const addCandidate = createAsyncThunk(
 );
 
 // Async thunk to update a candidate
-export const updateCandidate = createAsyncThunk(
+export const updateCandidate = createAsyncThunk<Candidate, { id: string; data: CandidateInput }>(
   "candidates/updateCandidate",
-  async ({ id, data }: { id: string; data: any }) => {
+  async ({ id, data }) => {
     try {
       // If a new profile picture is uploaded, update it in the image bucket
-      let profilePictureUrl = data.profilePictureUrl;
-      let profilePictureid = data.profilePictureid;
+      let profilePictureUrl = data.profileUrl;
+      let profilePictureid = data.profileid;
       if (data.image) {
         const imageFile = data.image;
         const imageResponse = await storage.createFile(
@@ -154,6 +173,7 @@ export const updateCandidate = createAsyncThunk(
         profilePictureid = imageResponse.$id;
         profilePictureUrl = generateFileUrl(ImageBucket, profilePictureid); // Generate URL
       }
+
       // If a new resume is uploaded, update it in the resume bucket
       let resumeUrl = data.resumeUrl;
       let resumeid = data.resumeid;
@@ -167,6 +187,7 @@ export const updateCandidate = createAsyncThunk(
         resumeid = resumeResponse.$id;
         resumeUrl = generateFileUrl(resumeBucket, resumeid); // Generate URL
       }
+
       // Prepare updated candidate data with URLs and IDs
       const updatedData = {
         ...data,
@@ -175,6 +196,7 @@ export const updateCandidate = createAsyncThunk(
         resumeUrl,
         resumeid,
       };
+
       // Update the candidate document in the database
       const response = await databases.updateDocument(
         db,
@@ -182,7 +204,7 @@ export const updateCandidate = createAsyncThunk(
         id,
         updatedData
       );
-      return response; // Return the updated candidate
+      return response as unknown as Candidate; // Explicitly cast to Candidate
     } catch (error: any) {
       throw new Error(error.message || "Failed to update candidate");
     }
@@ -190,7 +212,7 @@ export const updateCandidate = createAsyncThunk(
 );
 
 // Async thunk to delete a candidate
-export const deleteCandidate = createAsyncThunk(
+export const deleteCandidate = createAsyncThunk<string, string>(
   "candidates/deleteCandidate",
   async (id: string) => {
     try {
@@ -243,7 +265,7 @@ const candidateSlice = createSlice({
     });
     builder.addCase(addCandidate.fulfilled, (state, action) => {
       state.loading = false;
-      state.candidates = action.payload; // Add the new candidate to the list
+      state.candidates.push(action.payload); // Add the new candidate to the list
     });
     builder.addCase(addCandidate.rejected, (state, action) => {
       state.loading = false;

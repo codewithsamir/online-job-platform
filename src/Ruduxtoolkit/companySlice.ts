@@ -10,7 +10,7 @@ export interface Document {
   description?: string;
   industry: string;
   website?: string;
-  logoUrl?: File | string | undefined; // URL of the company logo
+  logoUrl?:  string ; // URL of the company logo
   logoId?: string; // ID of the uploaded logo file in the storage bucket
   createdBy: string; // User ID of the creator
   email: string; // Email of the creator
@@ -22,10 +22,11 @@ export interface Company {
   description?: string;
   industry: string;
   website?: string;
-  logoUrl?: File | string | undefined; // URL of the company logo
+  logoUrl?:  string ; // URL of the company logo
   logoId?: string; // ID of the uploaded logo file in the storage bucket
   createdBy: string; // User ID of the creator
   email: string; // Email of the creator
+  $createdAt:string
 }
 
 // Define the initial state
@@ -58,8 +59,9 @@ const mapDocumentToCompany = (doc: any): Company => ({
   email: doc.email,
   description: doc.description || "",
   website: doc.website || "",
-  logoUrl: doc.logoUrl || "" || undefined,
+  logoUrl: doc.logoUrl || "" ,
   logoId: doc.logoId || "",
+  $createdAt:doc.$createdAt
 });
 
 // Async thunk to fetch all companies for the current user
