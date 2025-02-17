@@ -13,6 +13,7 @@ import {
 import { checkArray } from "@/lib/checkarray";
 import { Button } from "@/components/ui/button";
 import Jobapplicationstatus from "@/components/dashboard/Jobapplicationstatus"; // Import Modal
+import Link from "next/link";
 
 interface TableColumn {
   header: string;
@@ -26,6 +27,7 @@ interface GenericTableProps {
   data: Record<string, any>[];
   footer?: { label: string; value: string };
   action?: boolean;
+  isuser?: boolean; // Add this prop to show actions column only for user
   
 }
 
@@ -35,6 +37,7 @@ export default function DashboardTable({
   data,
   footer,
   action,
+  isuser,
   
 }: GenericTableProps) {
   const datas = checkArray(data);
@@ -84,7 +87,7 @@ export default function DashboardTable({
                             ? "bg-green-500 text-white"
                             : "bg-red-500 text-white"
                         }`}
-                        onClick={() => openModal(row)}
+                        onClick={() => isuser ? " " : openModal(row)}
                       >
                         {row[column.accessor]}
                       </Button>
@@ -97,7 +100,9 @@ export default function DashboardTable({
                       >
                         Open Link
                       </a>
-                    ) : (
+                    ) : (column.accessor === "visit" ) ? (<Link href={`/User/job/${row.title}_${row.$id}`}>
+                      <Button variant="default">visit</Button>
+                    </Link>): (
                       row[column.accessor]
                     )}
                   </TableCell>

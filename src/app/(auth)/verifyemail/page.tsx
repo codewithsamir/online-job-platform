@@ -1,9 +1,11 @@
-"use client"
+"use client"; // Mark this as a client component
+
 import { Button } from '@/components/ui/button';
 import { updateEmailVerify } from '@/Ruduxtoolkit/emailverifySlice';
 import { useAppDispatch } from '@/Ruduxtoolkit/hook';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
+import { Suspense } from 'react'; // Import Suspense for wrapping
 
 const EmailVerificationPage = () => {
   const searchParams = useSearchParams();
@@ -53,4 +55,13 @@ const EmailVerificationPage = () => {
   );
 };
 
-export default EmailVerificationPage;
+// Wrap the component in a Suspense boundary
+const EmailVerificationPageWithSuspense = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EmailVerificationPage />
+    </Suspense>
+  );
+};
+
+export default EmailVerificationPageWithSuspense;

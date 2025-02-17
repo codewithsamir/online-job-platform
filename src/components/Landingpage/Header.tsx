@@ -19,7 +19,9 @@ const Header = () => {
   const { user } = useAppSelector((state) => state.auth);
 const router = useRouter()
 
-
+useEffect(() => {
+  getUser()
+},[])
 
 // Fetch user data if not already authenticated
 

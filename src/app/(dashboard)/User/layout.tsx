@@ -15,7 +15,7 @@ const Layout = ({
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { candidates, loading } = useAppSelector((state) => state.candidate);
-console.log(candidates)
+// console.log(candidates)
   // Fetch candidates on component mount
   useEffect(() => {
     

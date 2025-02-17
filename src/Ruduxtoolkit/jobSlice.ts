@@ -28,7 +28,8 @@ export interface Company {
 
 // Extend the Job interface to include company profile data
 export interface JobWithCompany extends Job {
-  companyProfile?: Company; // Optional company profile data
+  companyProfile?: Company | null; // Optional company profile data
+  companyName?: string; // Optional company name for filtering purposes
 }
 
 // Define the initial state
@@ -55,7 +56,7 @@ export const fetchJobs = createAsyncThunk<JobWithCompany[], void, { rejectValue:
   async (_, { rejectWithValue }) => {
     try {
       const response = await databases.listDocuments(db, jobs);
-      const jobsData = response.documents as Job[];
+      const jobsData = response.documents as unknown as Job[];
 
       // Fetch company profiles for each job
       const jobsWithCompany = await Promise.all(
@@ -64,7 +65,7 @@ export const fetchJobs = createAsyncThunk<JobWithCompany[], void, { rejectValue:
             const companyResponse = await databases.listDocuments(db, companies, [
               Query.equal("createdBy",job.postedBy)
             ]);
-            const companyProfile = companyResponse.documents[0] as Company;
+            const companyProfile = companyResponse.documents[0] as unknown as Company;
             return { ...job, companyProfile };
           } catch (error) {
             console.error(`Failed to fetch company profile for job ${job.$id}:`, error);
@@ -87,7 +88,7 @@ export const fetchJobById = createAsyncThunk<JobWithCompany, string, { rejectVal
     try {
       // Fetch the job document
       const jobResponse = await databases.getDocument(db, jobs, jobId);
-      const job = jobResponse as Job;
+      const job = jobResponse as unknown as Job;
 
       // Fetch the company profile associated with the job's postedBy field
       const companyProfileResponse = await databases.listDocuments(db, companies, [
@@ -95,12 +96,12 @@ export const fetchJobById = createAsyncThunk<JobWithCompany, string, { rejectVal
       ]);
 
       // Extract the first company profile from the response
-      const companyProfile = companyProfileResponse.documents[0]; // Assuming there's only one matching company
+      const companyProfile = companyProfileResponse.documents[0] as unknown as Company // Assuming there's only one matching company
 
       // Combine job and company profile data
       const jobWithCompany: JobWithCompany = {
         ...job,
-        companyProfile: companyProfile || null, // Include company profile or null if not found
+        companyProfile
       };
 
       return jobWithCompany;
@@ -127,7 +128,7 @@ export const fetchJobsByUser = createAsyncThunk<Job[], void, { rejectValue: stri
       const response = await databases.listDocuments(db, jobs, [
         Query.equal("postedBy", auth.user.$id),
       ]);
-      return response.documents as Job[];
+      return response.documents as unknown as Job[];
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch user jobs");
     }
@@ -155,7 +156,7 @@ export const addJob = createAsyncThunk<
       postedDate: new Date().toISOString(), // Set the current date as postedOn
     };
     const response = await databases.createDocument(db, jobs, "unique()", jobPayload);
-    return response as Job;
+    return response as unknown as Job;
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to add job");
   }
@@ -169,7 +170,7 @@ export const updateJob = createAsyncThunk<
 >("jobs/updateJob", async ({ id, data }, { rejectWithValue }) => {
   try {
     const response = await databases.updateDocument(db, jobs, id, data);
-    return response as Job;
+    return response as unknown as Job;
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to update job");
   }
