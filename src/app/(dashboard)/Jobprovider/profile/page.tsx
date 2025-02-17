@@ -8,7 +8,7 @@ const MyInformation = () => {
   const { companies, loading } = useAppSelector((state) => state.company);
 
   // Extract the first company document (if available)
-  const company = companies?.documents?.[0];
+  const company = companies?.[0];
 
   return (
     <div>

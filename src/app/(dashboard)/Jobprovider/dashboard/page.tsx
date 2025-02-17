@@ -19,7 +19,7 @@ const Dashboardpage = () => {
       if (userJobs.length > 0) {
         // Fetch applications for each job and get candidate details
         const jobsData = await Promise.all(
-          userJobs.map(async (job) => {
+          userJobs.map(async (job:any) => {
             try {
               // Fetch applications for the specific job ID
               const applications = await dispatch(fetchApplicationsByJob(job.$id)).unwrap();
@@ -41,7 +41,7 @@ const Dashboardpage = () => {
                 ...job,
                 applicants,
               };
-            } catch (error) {
+            } catch (error:any) {
               console.error(`Failed to fetch data for job ${job.$id}:`, error);
               return {
                 ...job,
@@ -68,13 +68,13 @@ const Dashboardpage = () => {
         <Dashboardcard
           content="Total Applications"
           className="bg-orange-400"
-          contentdata={jobsWithApplicants.reduce((total, job) => total + job.applicants.length, 0)}
+          contentdata={jobsWithApplicants.reduce((total:any, job:any) => total + job.applicants.length, 0)}
         />
         <Dashboardcard
           content="Selected Candidates"
           className="bg-green-600"
           contentdata={jobsWithApplicants.reduce(
-            (total, job) => total + job.applicants.filter((app) => app.status === "Accepted").length,
+            (total, job) => total + job.applicants.filter((app:any) => app.status === "Accepted").length,
             0
           )}
         />
@@ -86,7 +86,7 @@ const Dashboardpage = () => {
         {loading ? (
           <p className="text-center text-white">Loading...</p>
         ) : jobsWithApplicants.length > 0 ? (
-          jobsWithApplicants.map((job, index) => (
+          jobsWithApplicants.map((job:any, index:any) => (
             <div key={index} className="mb-6">
               <h3 className="text-lg font-semibold text-white mb-2">{job.title}</h3>
               <Dashboardtable

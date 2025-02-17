@@ -17,7 +17,7 @@ const layout = ({
         const dispatch = useAppDispatch();
         const { user } = useAppSelector((state) => state.auth);
         const { companies, loading ,isadddone} = useAppSelector((state) => state.company);
-      console.log(companies)
+      // console.log(companies)
         // Fetch candidates on component mount
         useEffect(() => {
           
@@ -47,7 +47,7 @@ const layout = ({
           <p className="text-white">Loading...</p>
         ) : !user?.emailVerification ? (
           <Confirmemail />
-        ) : companies?.total > 0 ? (
+        ) : companies?.length > 0 ? (
           children
         ) : (
           <CompanyForm />
