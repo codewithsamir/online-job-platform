@@ -137,8 +137,9 @@ export const addCandidate = createAsyncThunk<Candidate, CandidateInput>(
       }
 
       // Prepare candidate data with URLs and IDs
+      const {image, ...data} = candidateData;
       const candidatePayload = {
-        ...candidateData,
+        data,
         profileUrl,
         profileid,
       };

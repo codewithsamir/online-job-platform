@@ -11,7 +11,7 @@ export interface Job {
   company: string; // Company ID
   location: string;
   salary: number;
-  image:string;
+  
   postedDate: string; // ISO date string
   isActive: boolean;
   postedBy: string; // User ID of the job poster
@@ -151,9 +151,10 @@ export const addJob = createAsyncThunk<
       throw new Error("User not authenticated");
     }
     // Add the current user's ID to the job data
-    const {image,...data} = jobData; // Create a copy of the job data to avoid mutating the original data
+    
+    
     const jobPayload = {
-      data,
+      ...jobData,
       postedBy: auth.user.$id, // Automatically set the postedBy field
       postedDate: new Date().toISOString(), // Set the current date as postedOn
     };
