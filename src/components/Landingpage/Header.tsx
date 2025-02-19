@@ -16,12 +16,14 @@ const Header = () => {
   const dispatch = useAppDispatch();
 
   // Get the user from the Redux state
-  const { user } = useAppSelector((state) => state.auth);
+  const { user,isAuthenticated } = useAppSelector((state) => state.auth);
 const router = useRouter()
 
 useEffect(() => {
-  getUser()
-},[])
+  
+dispatch(getUser())
+  
+},[dispatch,isAuthenticated])
 
 // Fetch user data if not already authenticated
 

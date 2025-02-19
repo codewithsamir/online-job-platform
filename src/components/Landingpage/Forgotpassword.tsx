@@ -17,21 +17,25 @@ import {
 import { Input } from "@/components/ui/input"
 import { GiCrossMark } from "react-icons/gi"
 import { forgotpasswordActive, loginActive } from "@/Ruduxtoolkit/registerSlice"
-import { useDispatch } from "react-redux"
+
+import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook"
+import { updatepassword } from "@/Ruduxtoolkit/resetpasswordSlice"
+import { useState } from "react"
  
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
+  email: z.string().email({ message: "Invalid email format." }), // Corrected email validation
 })
 
+
+
 const Forgotpassword = () => {
-    const dispatch = useDispatch()
+  const [isLoading  , setIsLoading] = useState<boolean>(false)
+    const dispatch = useAppDispatch()
      // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
     },
   })
  
@@ -39,7 +43,10 @@ const Forgotpassword = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+    
+    dispatch(updatepassword(values))
+    .then((res)=>setIsLoading(true))
+    .catch((err)=>setIsLoading(false))
   }
   return (
 
@@ -56,7 +63,7 @@ const Forgotpassword = () => {
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
       <FormField
         control={form.control}
-        name="username"
+        name="email"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-white text-lg">Email</FormLabel>
@@ -71,7 +78,9 @@ const Forgotpassword = () => {
         )}
       />
      <div className="btn pt-2">
-       <Button type="submit" className="w-full bg-pink-400 hover:bg-pink-600 text-xl ">Submit</Button>
+       <Button type="submit" 
+        disabled={isLoading}
+       className="w-full bg-pink-400 hover:bg-pink-600 text-xl ">Submit</Button>
        </div>
     </form>
     <div className="btn pt-2  sm:flex gap-1  justify-center items-center">
@@ -81,6 +90,7 @@ const Forgotpassword = () => {
         dispatch(forgotpasswordActive(false))
         dispatch(loginActive(true))
        }}
+      
        className="text-pink-500 text-lg p-0">go to Login</Button>
        </div>
   </Form>
