@@ -21,6 +21,7 @@ import { forgotpasswordActive, loginActive } from "@/Ruduxtoolkit/registerSlice"
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook"
 import { updatepassword } from "@/Ruduxtoolkit/resetpasswordSlice"
 import { useState } from "react"
+import { toast } from "sonner"
  
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email format." }), // Corrected email validation
@@ -40,13 +41,20 @@ const Forgotpassword = () => {
   })
  
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    try {
+       await dispatch(updatepassword(values)).unwrap(); // Unwrap to get the payload directly
+
     
-    dispatch(updatepassword(values))
-    .then((res)=>setIsLoading(true))
-    .catch((err)=>setIsLoading(false))
+        toast.success("✅ Check your email for the reset link.");
+        setIsLoading(true);
+    
+      
+    } catch (error) {
+      toast.error("❌ Email not found. Please enter a registered email.");
+    }
   }
   return (
 

@@ -19,7 +19,7 @@ export const updatepassword = createAsyncThunk(
       const response = await account.createRecovery(email, "https://online-job-platform.vercel.app/passwordreset");
       return response;
     } catch (error: any) {
-      console.log(error);
+    //   console.log(error);
       return rejectWithValue(error.message || "An error occurred while updating password.");
     }
   }
@@ -34,7 +34,7 @@ export const confirmupdatapassword = createAsyncThunk(
       const response = await account.updateRecovery(data.id, data.secret, data.password);
       return response;
     } catch (error: any) {
-      console.log(error);
+    //   console.log(error);
       return rejectWithValue(error.message || "An error occurred while confirming password update.");
     }
   }

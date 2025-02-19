@@ -48,22 +48,29 @@ export default function ResetPasswordPage() {
   })
 
  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values)
-    const data:datas = {
-        password:values.password,
-        id:userId || "",
-        secret:secret || ""
 
-    }
-    dispatch(confirmupdatapassword(data))
-    .then((res)=>{
+    try {
+        const data:datas = {
+            password:values.password,
+            id:userId || "",
+            secret:secret || ""
+    
+        }
+        await dispatch(confirmupdatapassword(data)).unwrap()
         toast.success("successfully password changed")
         router.push("/")
         setIsLoading(true)
-    })
+    } catch (error) {
+        toast.error("Somethng went wrong ! password doesnot changed")
+        
+    }
+    
+      
+    
   }
 
   return (
