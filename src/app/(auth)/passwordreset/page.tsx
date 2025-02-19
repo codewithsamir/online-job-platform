@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ interface datas{
     secret:string ;
 }
 
-export default function ResetPasswordPage() {
+const  ResetPassword = ()=> {
   const searchParams = useSearchParams();
   const userId = searchParams.get("id");
   const secret = searchParams.get("secret");
@@ -127,3 +127,14 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
+
+// Wrap the component in a Suspense boundary
+const ResetPasswordPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPassword />
+    </Suspense>
+  );
+};
+export default ResetPasswordPage;
+
