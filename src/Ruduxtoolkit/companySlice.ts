@@ -99,7 +99,7 @@ export const addCompany = createAsyncThunk(
       companyData.createdBy = auth.user.$id;
       companyData.email = auth.user.email;
 
-      let logoUrl = "";
+      let logoUrls = "";
       let logoId = "";
       if (companyData.logoUrl && typeof companyData.logoUrl !== "string") {
         const logoFile = companyData.logoUrl;
@@ -109,12 +109,12 @@ export const addCompany = createAsyncThunk(
           logoFile
         );
         logoId = logoResponse.$id;
-        logoUrl = generateFileUrl(ImageBucket, logoId);
+        logoUrls = generateFileUrl(ImageBucket, logoId);
       }
       const {logoUrl , ...data} = companyData;
       const companyPayload = {
         ...data,
-        logoUrl,
+        logoUrl:logoUrls,
         logoId,
       };
 
