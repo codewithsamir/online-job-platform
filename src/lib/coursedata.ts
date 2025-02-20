@@ -4,7 +4,7 @@ export const coursedata = [
       "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Ym9va3xlbnwwfHwwfHx8MA%3D%3D",
       "description": "Learn to build modern web applications with React, Node.js, Express, and MongoDB. Covers frontend, backend, and deployment.",
       "rating": 4.8,
-      "duration": "12 weeks"
+      "duration": "10 weeks"
     },
     {
       "title": "Mastering Data Structures & Algorithms",
