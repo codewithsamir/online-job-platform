@@ -111,9 +111,9 @@ export const addCompany = createAsyncThunk(
         logoId = logoResponse.$id;
         logoUrl = generateFileUrl(ImageBucket, logoId);
       }
-
+      const {logoUrl , ...data} = companyData;
       const companyPayload = {
-        ...companyData,
+        ...data,
         logoUrl,
         logoId,
       };
