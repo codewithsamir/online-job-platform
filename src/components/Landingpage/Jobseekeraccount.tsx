@@ -163,7 +163,7 @@ const Jobseekeraccount = () => {
               <Button 
               className="w-full"
               onClick={() => {
-             dispatch(loginWithGoogle("job seeker"))
+             dispatch(loginWithGoogle({role:"job seeker"}))
                
               }}
               >
