@@ -64,7 +64,7 @@ export const loginUser = createAsyncThunk<
 
 // Async thunk for Google login
 export const loginWithGoogle = createAsyncThunk<
-  {  message: string },
+  { user: User; message: string },
   {role?:string},
   { rejectValue: string }
 >("auth/loginWithGoogle", async ({role}, { rejectWithValue }) => {
@@ -80,9 +80,9 @@ await account.createOAuth2Session(
 );
 
     // Step 2: Fetch the user details
-    // const user = await account.get();
+    const user = await account.get();
 
-    return {  message: "Google login successful" };
+    return { user, message: "Google login successful" };
   } catch (error: any) {
     return rejectWithValue(error.message || "Google login failed");
   }
@@ -122,8 +122,9 @@ export const getUser = createAsyncThunk<User, void, { rejectValue: string }>(
   async (_, { rejectWithValue }) => {
     try {
       // Fetch the current user details
+      await account.getSession("current"); // Automatically logs in the user if a session exists
       const response = await account.get();
-      console.log("for check",response)
+      console.log(response)
       return response as User;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch user");
