@@ -160,7 +160,7 @@ console.log(result.user?.prefs?.role)
 <Button 
 className="w-full"
 onClick={() => {
-
+setgooglelogin(true)
 
 }}
 >
