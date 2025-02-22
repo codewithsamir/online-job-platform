@@ -167,8 +167,7 @@ const Jobseekeraccount = () => {
                
               }}
               >
-                
-              <FaGoogle className="text-3xl text-red-500" />
+                <FaGoogle className="text-3xl text-red-500" />
               Signup with Google
               </Button>
               
