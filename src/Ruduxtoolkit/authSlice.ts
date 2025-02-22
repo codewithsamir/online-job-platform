@@ -76,7 +76,7 @@ await account.createOAuth2Session(
   OAuthProvider.Google, // provider
   `https://online-job-platform.vercel.app/${userrole}/dashboard`, // redirect here on success
   'https://online-job-platform.vercel.app/failed', // redirect here on failure
-  ['email', 'user'] // scopes (optional)
+  ['email', 'profile'] // scopes (optional)
 );
 
     // Step 2: Fetch the user details
