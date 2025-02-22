@@ -3,6 +3,7 @@ import Confirmemail from "@/components/dashboard/confirmemail";
 import Header from "@/components/dashboard/header";
 import Sidebar from "@/components/dashboard/sidebar";
 import UserProfileform from "@/components/dashboard/userProfileform";
+import { updateUserPreferences } from "@/Ruduxtoolkit/authSlice";
 import { fetchCandidates } from "@/Ruduxtoolkit/candidateSlice";
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook";
 import React, { useEffect } from "react";
@@ -20,6 +21,7 @@ const Layout = ({
   useEffect(() => {
     
       dispatch(fetchCandidates());
+      dispatch(updateUserPreferences({role:"job seeker"}))
     
   }, [dispatch]);
 

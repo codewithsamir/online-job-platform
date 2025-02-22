@@ -15,11 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { GiCrossMark } from "react-icons/gi";
 import { jobseekerActive, loginActive } from "@/Ruduxtoolkit/registerSlice";
-import { signupUser } from "@/Ruduxtoolkit/authSlice";
+import { loginWithGoogle, signupUser } from "@/Ruduxtoolkit/authSlice";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/Ruduxtoolkit/hook";
 import { useRouter } from "next/navigation";
 import { useState } from "react"; // Import useState for loading state
+import { FaGoogle } from "react-icons/fa";
 
 const formSchema = z.object({
   fullname: z.string().min(2, {
@@ -156,6 +157,23 @@ const Jobseekeraccount = () => {
                 {isLoading ? "Creating account..." : "Submit"}
               </Button>
             </div>
+
+               {/* Google Sign In */}
+            <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
+              <Button 
+              className="w-full"
+              onClick={() => {
+             dispatch(loginWithGoogle("job seeker"))
+               
+              }}
+              >
+                
+              <FaGoogle className="text-3xl text-red-500" />
+              Signup with Google
+              </Button>
+              
+            </div>
+
             {/* Login Link */}
             <div className="btn pt-2 sm:flex gap-1 justify-center items-center">
               <p className="text-lg text-white">Already have a jobseeker account?</p>

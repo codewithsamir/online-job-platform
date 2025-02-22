@@ -4,6 +4,7 @@ import Confirmemail from '@/components/dashboard/confirmemail';
 import Header from '@/components/dashboard/header';
 import Sidebar from '@/components/dashboard/sidebar';
 import UserProfileform from '@/components/dashboard/userProfileform';
+import { updateUserPreferences } from '@/Ruduxtoolkit/authSlice';
 import { fetchCandidates } from '@/Ruduxtoolkit/candidateSlice';
 import { fetchCompanies } from '@/Ruduxtoolkit/companySlice';
 import { useAppDispatch, useAppSelector } from '@/Ruduxtoolkit/hook';
@@ -22,6 +23,7 @@ const layout = ({
         useEffect(() => {
           
             dispatch(fetchCompanies());
+            dispatch(updateUserPreferences({role:"job provider"}))
           
         }, [dispatch,isadddone]);
 

@@ -65,15 +65,16 @@ export const loginUser = createAsyncThunk<
 // Async thunk for Google login
 export const loginWithGoogle = createAsyncThunk<
   { user: User; message: string },
-  void,
+  {role?:string},
   { rejectValue: string }
->("auth/loginWithGoogle", async (_, { rejectWithValue }) => {
+>("auth/loginWithGoogle", async ({role}, { rejectWithValue }) => {
   try {
+    const userrole:string = role === "job seeker" ? "User" : "jobprovider"
     // Step 1: Create OAuth session
     // Go to OAuth provider login page
 await account.createOAuth2Session(
   OAuthProvider.Google, // provider
-  'https://online-job-platform.vercel.app/User/dashboard', // redirect here on success
+  `https://online-job-platform.vercel.app/${userrole}/dashboard`, // redirect here on success
   'https://online-job-platform.vercel.app/failed', // redirect here on failure
   ['profile', 'user'] // scopes (optional)
 );
@@ -86,6 +87,21 @@ await account.createOAuth2Session(
     return rejectWithValue(error.message || "Google login failed");
   }
 });
+
+export const updateUserPreferences = createAsyncThunk<
+  { message: string },
+  { role: string },
+  { rejectValue: string }
+>("auth/updateUserPreferences", async ({ role }, { rejectWithValue }) => {
+  try {
+    await account.updatePrefs({ role });
+    return { message: "User preferences updated successfully" };
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to update preferences");
+  }
+});
+
+
 
 // Async thunk for user logout
 export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
@@ -214,6 +230,19 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload || "Google login failed";
         state.isAuthenticated = false;
+      })
+
+      .addCase(updateUserPreferences.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateUserPreferences.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(updateUserPreferences.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Failed to update preferences";
       });
   },
 });

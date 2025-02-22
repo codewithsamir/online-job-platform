@@ -23,6 +23,7 @@ import { loginUser, loginWithGoogle } from "@/Ruduxtoolkit/authSlice"; // Import
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook"; // Import typed useSelector
 import { toast } from "sonner"; // For notifications
 import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -35,7 +36,7 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false); // Loader state
-  
+  const [googlelogin , setgooglelogin] =  useState(false); // Google login state
 
   // Initialize form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -151,20 +152,57 @@ console.log(result.user?.prefs?.role)
             </div>
 
             {/* Google Sign In */}
+            {
+
+!googlelogin 
+&& 
+<div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
+<Button 
+className="w-full"
+onClick={() => {
+
+
+}}
+>
+  
+<FaGoogle className="text-3xl text-red-500" />
+Sign in with Google
+</Button>
+
+</div>
+            }
+         
+            
+
+         {googlelogin && 
             <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
-              <Button 
+              {/* <Button 
               className="w-full"
               onClick={() => {
-             dispatch(loginWithGoogle())
-               
+
+             dispatch(loginWithGoogle({role: "job seeker" }))
               }}
               >
                 
               <FaGoogle className="text-3xl text-red-500" />
               Sign in with Google
-              </Button>
+              </Button> */}
+                 <Select 
+                 onValueChange={(value) => dispatch(loginWithGoogle({role: value })  )}
+                 >
+     <SelectTrigger className="w-full bg-black border-none text-white">
+       <SelectValue placeholder="Select to continue , login with google" />
+     </SelectTrigger>
+     <SelectContent>
+       <SelectItem value="job seeker">job seeker</SelectItem>
+       <SelectItem value="job provider">job provider</SelectItem>
+       
+     </SelectContent>
+   </Select>
+           
               
             </div>
+              }
 
             {/* Create New Account */}
             <div className="btn pt-2 sm:flex gap-1 justify-center items-center">
