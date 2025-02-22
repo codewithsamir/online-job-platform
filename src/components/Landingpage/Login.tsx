@@ -19,7 +19,7 @@ import { FaGoogle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 import { categoriActive, forgotpasswordActive, loginActive } from "@/Ruduxtoolkit/registerSlice";
-import { loginUser } from "@/Ruduxtoolkit/authSlice"; // Import loginUser action
+import { loginUser, loginWithGoogle } from "@/Ruduxtoolkit/authSlice"; // Import loginUser action
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook"; // Import typed useSelector
 import { toast } from "sonner"; // For notifications
 import { useState } from "react";
@@ -150,10 +150,27 @@ console.log(result.user?.prefs?.role)
               </Button>
             </div>
 
+            {/* Google Sign In */}
+            <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
+              <Button 
+              className="w-full"
+              onClick={() => {
+             dispatch(loginWithGoogle())
+               
+              }}
+              >
+                
+              <FaGoogle className="text-3xl text-red-500" />
+              Sign in with Google
+              </Button>
+              
+            </div>
+
             {/* Create New Account */}
             <div className="btn pt-2 sm:flex gap-1 justify-center items-center">
               <p className="text-lg text-white">Don't have an account?</p>
               <Button
+              
                 variant={"link"}
                 onClick={() => {
                   dispatch(loginActive(false));
@@ -161,7 +178,9 @@ console.log(result.user?.prefs?.role)
                 }}
                 className="text-pink-500 text-lg p-0"
               >
+                <span className="text-xl">
                 Create New Account
+                </span>
               </Button>
             </div>
           </form>

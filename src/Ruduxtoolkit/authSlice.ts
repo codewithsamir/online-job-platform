@@ -1,6 +1,7 @@
 // features/auth/authSlice.ts
 import { account } from "@/models/client/config";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { OAuthProvider } from "appwrite";
 
 // Define types
 interface User {
@@ -58,6 +59,31 @@ export const loginUser = createAsyncThunk<
     return { user, message: "Login successful" };
   } catch (error: any) {
     return rejectWithValue(error.message || "Invalid email or password");
+  }
+});
+
+// Async thunk for Google login
+export const loginWithGoogle = createAsyncThunk<
+  { user: User; message: string },
+  void,
+  { rejectValue: string }
+>("auth/loginWithGoogle", async (_, { rejectWithValue }) => {
+  try {
+    // Step 1: Create OAuth session
+    // Go to OAuth provider login page
+await account.createOAuth2Session(
+  OAuthProvider.Google, // provider
+  'https://online-job-platform.vercel.app/User/dashboard', // redirect here on success
+  'https://online-job-platform.vercel.app/failed', // redirect here on failure
+  ['profile', 'user'] // scopes (optional)
+);
+
+    // Step 2: Fetch the user details
+    const user = await account.get();
+
+    return { user, message: "Google login successful" };
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Google login failed");
   }
 });
 
@@ -171,6 +197,22 @@ const authSlice = createSlice({
       .addCase(getUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || "Failed to fetch user";
+        state.isAuthenticated = false;
+      })
+
+        // handle for google signup or login 
+      .addCase(loginWithGoogle.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(loginWithGoogle.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+      })
+      .addCase(loginWithGoogle.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Google login failed";
         state.isAuthenticated = false;
       });
   },
