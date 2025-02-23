@@ -122,7 +122,13 @@ export const getUser = createAsyncThunk<User, void, { rejectValue: string }>(
   async (_, { rejectWithValue }) => {
     try {
       // Fetch the current user details
-      await account.getSession("current"); // Automatically logs in the user if a session exists
+      
+      const session = await account.getSession('current');
+
+// Provider information
+console.log(session.provider);
+console.log(session.providerUid);
+console.log(session.providerAccessToken);
       const response = await account.get();
       // console.log(response)
       return response as User;
