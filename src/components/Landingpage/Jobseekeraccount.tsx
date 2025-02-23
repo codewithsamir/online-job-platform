@@ -157,7 +157,7 @@ const Jobseekeraccount = () => {
                 {isLoading ? "Creating account..." : "Submit"}
               </Button>
             </div>
-
+            </form>
                {/* Google Sign In */}
             <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
               <Button 
@@ -187,7 +187,7 @@ const Jobseekeraccount = () => {
                 Log in
               </Button>
             </div>
-          </form>
+          
         </Form>
       </div>
     </div>

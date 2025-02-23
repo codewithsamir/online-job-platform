@@ -136,7 +136,7 @@ console.log(result.user?.prefs?.role)
                 {isLoading ? "Logging in..." : "Submit"}
               </Button>
             </div>
-
+            </form>
             {/* Forgot Password */}
             <div className="forgot text-center py-2">
               <Button
@@ -191,7 +191,7 @@ Sign in with Google
                  onValueChange={(value) => dispatch(loginWithGoogle({role: value })  )}
                  >
      <SelectTrigger className="w-full bg-black border-none text-white">
-       <SelectValue placeholder="Select to continue , login with google" />
+       <SelectValue placeholder="Select to continue or log in with Google." />
      </SelectTrigger>
      <SelectContent>
        <SelectItem value="job seeker">job seeker</SelectItem>
@@ -221,7 +221,7 @@ Sign in with Google
                 </span>
               </Button>
             </div>
-          </form>
+        
         </Form>
       </div>
     </div>
