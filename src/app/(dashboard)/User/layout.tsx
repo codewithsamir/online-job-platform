@@ -20,10 +20,12 @@ const Layout = ({
   // Fetch candidates on component mount
   useEffect(() => {
     
-      dispatch(fetchCandidates());
+    if(user){ 
       dispatch(updateUserPreferences({role:"job seeker"}))
+      dispatch(fetchCandidates());
+    }
     
-  }, [dispatch]);
+  }, []);
 
   // Define the menu items for the sidebar
   const menu = [
