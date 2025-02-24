@@ -56,7 +56,7 @@ const Dashboardpage = () => {
       }
       setLoading(false);
     });
-  }, [dispatch, userJobs]);
+  }, [dispatch]);
 
   return (
     <div className="w-full space-y-6 text-white">
