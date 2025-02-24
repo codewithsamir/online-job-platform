@@ -37,6 +37,7 @@ const Login = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false); // Loader state
   const [googlelogin , setgooglelogin] =  useState(false); // Google login state
+  const [role, setrole] = useState("User"); //
 
   // Initialize form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,18 +58,13 @@ const Login = () => {
           password: values.password,
         })
       ).unwrap();
-console.log(result.user?.prefs?.role)
+// console.log(result.user?.prefs?.role)
       // Show success toast
       toast.success(result.message);
 
-      // Redirect based on user role
-      if (result.user?.prefs?.role === "job provider") {
-        router.push("/Jobprovider/dashboard");
-      } else if (result.user?.prefs?.role === "job seeker") {
-        router.push("/User/dashboard");
-      } else {
-        toast.error("Role not defined for this user.");
-      }
+ 
+        router.push(`/${role}/dashboard`);
+     
     } catch (error: any) {
       // Show error toast
       toast.error(error || "Failed to log in");
@@ -86,6 +82,7 @@ console.log(result.user?.prefs?.role)
         />
         <h2 className="text-center font-bold text-white text-3xl mb-5">Login</h2>
         <Form {...form}>
+          {!googlelogin  &&
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Email */}
             <FormField
@@ -126,6 +123,24 @@ console.log(result.user?.prefs?.role)
               )}
             />
 
+<div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
+           
+           <Select 
+           onValueChange={(value) => setrole(value) }
+           >
+<SelectTrigger className="w-full bg-[#471045c4] border-none text-white">
+ <SelectValue placeholder="Select to continue or log in with Google." />
+</SelectTrigger>
+<SelectContent>
+ <SelectItem value="job seeker">job seeker</SelectItem>
+ <SelectItem value="job provider">job provider</SelectItem>
+ 
+</SelectContent>
+</Select>
+     
+        
+      </div>
+
             {/* Submit Button */}
             <div className="btn pt-2">
               <Button
@@ -137,6 +152,7 @@ console.log(result.user?.prefs?.role)
               </Button>
             </div>
             </form>
+            }
             {/* Forgot Password */}
             <div className="forgot text-center py-2">
               <Button
@@ -176,22 +192,12 @@ Sign in with Google
 
          {googlelogin && 
             <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
-              {/* <Button 
-              className="w-full"
-              onClick={() => {
-
-             dispatch(loginWithGoogle({role: "job seeker" }))
-              }}
-              >
-                
-              <FaGoogle className="text-3xl text-red-500" />
-              Sign in with Google
-              </Button> */}
+           
                  <Select 
                  onValueChange={(value) => dispatch(loginWithGoogle({role: value })  )}
                  >
      <SelectTrigger className="w-full bg-black border-none text-white">
-       <SelectValue placeholder="Select to continue or log in with Google." />
+       <SelectValue placeholder="Please select a role to continue." />
      </SelectTrigger>
      <SelectContent>
        <SelectItem value="job seeker">job seeker</SelectItem>

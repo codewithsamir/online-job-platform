@@ -6,7 +6,7 @@ import UserProfileform from "@/components/dashboard/userProfileform";
 import { updateUserPreferences } from "@/Ruduxtoolkit/authSlice";
 import { fetchCandidates } from "@/Ruduxtoolkit/candidateSlice";
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const Layout = ({
   children,
@@ -39,6 +39,7 @@ const Layout = ({
     "Applied Jobs",
     "Resume Builder",
     "Profile",
+    
   ];
 
   return (
