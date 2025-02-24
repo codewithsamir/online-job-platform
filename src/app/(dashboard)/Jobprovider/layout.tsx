@@ -23,7 +23,7 @@ const layout = ({
         useEffect(() => {
            if (!user) return;
          
-           if (!user.prefs || !user.prefs.role) {
+           if (!user.prefs || !user.prefs.isJobProvider) {
              dispatch(updateUserPreferences({ role: "job provider",
               isJobProvider: true
               }));
