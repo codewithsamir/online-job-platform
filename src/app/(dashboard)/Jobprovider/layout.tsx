@@ -21,9 +21,14 @@ const layout = ({
       // console.log(companies)
         // Fetch candidates on component mount
         useEffect(() => {
-          
-            dispatch(fetchCompanies());
+           if (user && (!user.prefs || !user.prefs.role)) {
             dispatch(updateUserPreferences({role:"job provider"}))
+            
+                }
+                if(user){
+
+                  dispatch(fetchCompanies());
+                }
           
         }, [dispatch,isadddone]);
 

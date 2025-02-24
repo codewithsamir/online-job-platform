@@ -19,10 +19,15 @@ const Layout = ({
 // console.log(candidates)
   // Fetch candidates on component mount
   useEffect(() => {
-    if (user) {
-      dispatch(updateUserPreferences({ role: "job seeker" }));
-      dispatch(fetchCandidates());
-    }
+    useEffect(() => {
+      if (user && (!user.prefs || !user.prefs.role)) {
+        dispatch(updateUserPreferences({ role: "job seeker" }));
+      }
+      if (user) {
+        dispatch(fetchCandidates());
+      }
+    }, [user, dispatch]);
+    
   }, [user, dispatch]);
   
 
