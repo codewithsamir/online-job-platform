@@ -22,7 +22,8 @@ const Layout = ({
     if (!user) return;
   
     if (!user.prefs || !user.prefs.role) {
-      dispatch(updateUserPreferences({ role: "job seeker" }));
+      dispatch(updateUserPreferences({ role: "job seeker"
+       }));
     }
   
     dispatch(fetchCandidates());

@@ -90,7 +90,7 @@ await account.createOAuth2Session(
 
 export const updateUserPreferences = createAsyncThunk<
   { message: string },
-  { role: string },
+  { role: string ,isJobProvider ?: boolean},
   { rejectValue: string }
 >("auth/updateUserPreferences", async ({ role }, { rejectWithValue }) => {
   try {

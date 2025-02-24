@@ -24,11 +24,13 @@ const layout = ({
            if (!user) return;
          
            if (!user.prefs || !user.prefs.role) {
-             dispatch(updateUserPreferences({ role: "job provider" }));
+             dispatch(updateUserPreferences({ role: "job provider",
+              isJobProvider: true
+              }));
            }
          
-           dispatch(fetchCandidates());
-         }, [user?.prefs?.role, dispatch]); // Only run when `role` changes
+           dispatch(fetchCompanies());
+         }, [dispatch,isadddone]); // Only run when `role` changes
          
 
       const menu = ["Dashboard","Add job","candidate","Profile"]
