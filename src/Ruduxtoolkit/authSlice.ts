@@ -69,7 +69,7 @@ export const loginWithGoogle = createAsyncThunk<
   { rejectValue: string }
 >("auth/loginWithGoogle", async ({role}, { rejectWithValue }) => {
   try {
-    const userrole:string = role === "job seeker" ? "User" : "jobprovider"
+    const userrole:string = role === "job seeker" ? "User" : "Jobprovider"
     // Step 1: Create OAuth session
     // Go to OAuth provider login page
 await account.createOAuth2Token(
