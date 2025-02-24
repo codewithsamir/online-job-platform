@@ -72,7 +72,7 @@ export const loginWithGoogle = createAsyncThunk<
     const userrole:string = role === "job seeker" ? "User" : "jobprovider"
     // Step 1: Create OAuth session
     // Go to OAuth provider login page
-await account.createOAuth2Session(
+await account.createOAuth2Token(
   OAuthProvider.Google, // provider
   `https://online-job-platform.vercel.app/${userrole}/dashboard`, // redirect here on success
   'https://online-job-platform.vercel.app/failed', // redirect here on failure
