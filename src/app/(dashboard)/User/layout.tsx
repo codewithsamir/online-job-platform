@@ -14,7 +14,7 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user,isLoading } = useAppSelector((state) => state.auth);
   const { candidates, loading } = useAppSelector((state) => state.candidate);
 // console.log(candidates)
   // Fetch candidates on component mount
@@ -55,7 +55,7 @@ const Layout = ({
 
         {/* Main Content Area */}
         <div className="flex-1 min-h-screen bg-[#2E2835] p-6 rounded-xl relative">
-          {loading ? (
+          {isLoading ? (
             <p className="text-white">Loading...</p>
           ) : !user?.emailVerification ? (
             <Confirmemail />
