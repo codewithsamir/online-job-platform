@@ -19,16 +19,15 @@ const Layout = ({
 // console.log(candidates)
   // Fetch candidates on component mount
   useEffect(() => {
-    useEffect(() => {
-      if (user && (!user.prefs || !user.prefs.role)) {
-        dispatch(updateUserPreferences({ role: "job seeker" }));
-      }
-      if (user) {
-        dispatch(fetchCandidates());
-      }
-    }, [user, dispatch]);
-    
-  }, [user, dispatch]);
+    if (!user) return;
+  
+    if (!user.prefs || !user.prefs.role) {
+      dispatch(updateUserPreferences({ role: "job seeker" }));
+    }
+  
+    dispatch(fetchCandidates());
+  }, [user?.prefs?.role, dispatch]); // Only run when `role` changes
+  
   
 
   // Define the menu items for the sidebar

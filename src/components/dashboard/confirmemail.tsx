@@ -5,7 +5,7 @@ import { useAppDispatch } from '@/Ruduxtoolkit/hook';
 import { sendEmailVerify } from '@/Ruduxtoolkit/emailverifySlice';
 import { toast } from 'sonner';
 
-const Confirmemail: React.FC = () => {
+const Confirmemail = () => {
   const dispatch = useAppDispatch();
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // State to track button's disabled status
 
