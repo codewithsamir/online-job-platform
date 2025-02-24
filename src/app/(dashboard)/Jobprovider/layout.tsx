@@ -21,16 +21,15 @@ const layout = ({
       // console.log(companies)
         // Fetch candidates on component mount
         useEffect(() => {
-           if (user && (!user.prefs || !user.prefs.role)) {
-            dispatch(updateUserPreferences({role:"job provider"}))
-            
-                }
-                if(user){
-
-                  dispatch(fetchCompanies());
-                }
-          
-        }, [dispatch,isadddone]);
+           if (!user) return;
+         
+           if (!user.prefs || !user.prefs.role) {
+             dispatch(updateUserPreferences({ role: "job provider" }));
+           }
+         
+           dispatch(fetchCandidates());
+         }, [user?.prefs?.role, dispatch]); // Only run when `role` changes
+         
 
       const menu = ["Dashboard","Add job","candidate","Profile"]
 
