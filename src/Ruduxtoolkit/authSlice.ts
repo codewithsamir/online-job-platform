@@ -92,9 +92,9 @@ export const updateUserPreferences = createAsyncThunk<
   { message: string },
   { role: string ,isJobProvider ?: boolean},
   { rejectValue: string }
->("auth/updateUserPreferences", async ({ role }, { rejectWithValue }) => {
+>("auth/updateUserPreferences", async (data, { rejectWithValue }) => {
   try {
-    await account.updatePrefs({ role });
+    await account.updatePrefs(data);
     return { message: "User preferences updated successfully" };
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to update preferences");
@@ -123,12 +123,12 @@ export const getUser = createAsyncThunk<User, void, { rejectValue: string }>(
     try {
       // Fetch the current user details
       
-      const session = await account.getSession('current');
+       await account.getSession('current');
 
 // Provider information
-console.log(session.provider);
-console.log(session.providerUid);
-console.log(session.providerAccessToken);
+// console.log(session.provider);
+// console.log(session.providerUid);
+// console.log(session.providerAccessToken);
       const response = await account.get();
       // console.log(response)
       return response as User;
