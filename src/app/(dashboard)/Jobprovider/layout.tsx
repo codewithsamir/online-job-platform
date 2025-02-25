@@ -16,7 +16,7 @@ const layout = ({
     children: React.ReactNode;
   }>) => {
         const dispatch = useAppDispatch();
-        const { user } = useAppSelector((state) => state.auth);
+        const { user,isLoading } = useAppSelector((state) => state.auth);
         const { companies, loading ,isadddone} = useAppSelector((state) => state.company);
       // console.log(companies)
         // Fetch candidates on component mount
@@ -30,7 +30,7 @@ const layout = ({
            }
          
            dispatch(fetchCompanies());
-         }, [dispatch,isadddone]); // Only run when `role` changes
+         }, [isadddone]);
          
 
       const menu = ["Dashboard","Add job","candidate","Profile"]
@@ -51,7 +51,7 @@ const layout = ({
 
       {/* Main Content Area */}
       <div className="flex-1 min-h-screen bg-[#2E2835] p-6 rounded-xl relative">
-        {loading ? (
+        {isLoading ? (
           <p className="text-white">Loading...</p>
         ) : !user?.emailVerification ? (
           <Confirmemail />
