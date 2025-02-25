@@ -40,14 +40,14 @@ const Sidebar = ({ menu }: any) => {
             </Link>
           );
         })}
-        {user?.prefs?.isJobProvider && 
+        {/* {user?.prefs?.isJobProvider  && 
         <Link href="/Jobprovider/dashboard">
         <Button 
          variant="secondary"
          className={`bg-[#FF0B7E]
              hover:bg-[#FF0B7E] w-[200px] p-6 my-2 text-white text-xl`}
         >job provider</Button></Link>
-        }
+        } */}
       </div>
     </aside>
   );
