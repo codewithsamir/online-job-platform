@@ -109,7 +109,7 @@ const JobForm = () => {
           )} />
 
           <FormField control={form.control} name="totalvacancy" render={({ field }) => (
-            <FormItem><FormLabel>Total Vacancy</FormLabel><FormControl><Input type="number" placeholder="Enter total vacancy" {...field} /></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>Total Vacancy</FormLabel><FormControl><Input placeholder="Enter total vacancy" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
 
           <FormField control={form.control} name="category" render={({ field }) => (
