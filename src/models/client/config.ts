@@ -14,13 +14,13 @@ const storage = new Storage(client);
 
 
 //job collection on show real times
-client.subscribe('databases.job_platform.collections.jobs.documents', (response) => {
-    console.log('New update on Jobs collection:', response);
-});
+// client.subscribe('databases.job_platform.collections.jobs.documents', (response) => {
+//     console.log('New update on Jobs collection:', response);
+// });
 
-client.subscribe('databases.job_platform.collections.notifications.documents', (response) => {
-    console.log('New Notification Received:', response);
-});
+// client.subscribe('databases.job_platform.collections.notifications.documents', (response) => {
+//     console.log('New Notification Received:', response);
+// });
 
 
 

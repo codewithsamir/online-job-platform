@@ -44,6 +44,8 @@ const JobForm = () => {
   const dispatch = useAppDispatch();
   const [content, setContent] = useState("");
 
+  
+
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
