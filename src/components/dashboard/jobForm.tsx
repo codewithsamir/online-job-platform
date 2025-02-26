@@ -29,7 +29,7 @@ const formSchema = z.object({
   title: z.string().min(2, { message: "Title must be at least 2 characters long." }),
   
   category: z.string().min(2, { message: "Category must be at least 2 characters long." }),
-  totalvacancy: z.preprocess((val) => Number(val), z.number().min(1, { message: "Total vacancy at least 1." })),
+  totalvacancy: z.string().min(1, { message: "Total vacancy at least 1." }),
   companyName: z.string().min(2, { message: "Company name must be at least 2 characters long." }),
   location: z.string().min(2, { message: "Location must be at least 2 characters long." }),
   salaryRange: z.string().optional(),
