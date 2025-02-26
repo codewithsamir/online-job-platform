@@ -55,7 +55,7 @@ const JobForm = () => {
       salaryRange: "",
       jobType: undefined,
       category: "",
-      totalvacancy: 1,
+      totalvacancy: "",
       applicationDeadline: undefined,
       isActive: true,
     },

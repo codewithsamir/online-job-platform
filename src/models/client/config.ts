@@ -1,7 +1,7 @@
 import env from "@/app/env";
 
 import { Client, Account, Avatars, Databases, Storage } from "appwrite";
-import { jobs } from "../name";
+
 
 const client = new Client()
     .setEndpoint(env.appwrite.endpoint) // Your API Endpoint
@@ -17,6 +17,11 @@ const storage = new Storage(client);
 client.subscribe('databases.job_platform.collections.jobs.documents', (response) => {
     console.log('New update on Jobs collection:', response);
 });
+
+client.subscribe('databases.job_platform.collections.notifications.documents', (response) => {
+    console.log('New Notification Received:', response);
+});
+
 
 
 
