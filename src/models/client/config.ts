@@ -14,9 +14,10 @@ const storage = new Storage(client);
 
 
 //job collection on show real times
-client.subscribe(jobs, (response) => {
-    console.log('New update: on job collection', response);
+client.subscribe('databases.job_platform.collections.jobs.documents', (response) => {
+    console.log('New update on Jobs collection:', response);
 });
+
 
 
 export { client, databases, account, avatars, storage}
