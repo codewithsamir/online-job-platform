@@ -168,7 +168,7 @@ const Login = () => {
             </div>
 
             {/* Google Sign In */}
-            {
+            {/* {
 
 !googlelogin 
 && 
@@ -186,11 +186,11 @@ Sign in with Google
 </Button>
 
 </div>
-            }
+            } */}
          
             
 
-         {googlelogin && 
+         {/* {googlelogin && 
             <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
            
                  <Select 
@@ -208,7 +208,7 @@ Sign in with Google
            
               
             </div>
-              }
+              } */}
 
             {/* Create New Account */}
             <div className="btn pt-2 sm:flex gap-1 justify-center items-center">

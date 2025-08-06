@@ -159,7 +159,7 @@ const Jobseekeraccount = () => {
             </div>
             </form>
                {/* Google Sign In */}
-            <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
+            {/* <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
               <Button 
               className="w-full"
               onClick={() => {
@@ -171,7 +171,7 @@ const Jobseekeraccount = () => {
               Signup with Google
               </Button>
               
-            </div>
+            </div> */}
 
             {/* Login Link */}
             <div className="btn pt-2 sm:flex gap-1 justify-center items-center">

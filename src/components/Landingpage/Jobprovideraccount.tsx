@@ -159,7 +159,7 @@ const Jobprovideraccount = () => {
             </div>
             </form>
                 {/* Google Sign In */}
-                        <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
+                        {/* <div className="google-btn pt-2 sm:flex gap-1 justify-center items-center w-full">
                           <Button 
                           className="w-full"
                           onClick={() => {
@@ -172,7 +172,7 @@ const Jobprovideraccount = () => {
                           Signup with Google
                           </Button>
                           
-                        </div>
+                        </div> */}
             {/* Login Link */}
             <div className="btn pt-2 sm:flex gap-1 justify-center items-center">
               <p className="text-lg text-white">Already have a job seeker account?</p>
