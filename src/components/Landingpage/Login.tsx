@@ -129,7 +129,7 @@ const Login = () => {
            onValueChange={(value) => setrole(value) }
            >
 <SelectTrigger className="w-full bg-[#471045c4] border-none text-white">
- <SelectValue placeholder="Select to continue or log in with Google." />
+ <SelectValue placeholder="Select Role" />
 </SelectTrigger>
 <SelectContent>
  <SelectItem value="job seeker">job seeker</SelectItem>
