@@ -1,56 +1,42 @@
+// features/company/companySlice.ts
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { databases, storage } from "@/models/client/config"; // Import Appwrite configuration
-import { db, companies, ImageBucket } from "@/models/name"; // Import database and collection names
+import { databases, storage } from "@/models/client/config"; 
+import { db, companies, ImageBucket } from "@/models/name"; 
 import { Query } from "appwrite";
 
-// Define the company interface
-export interface Document {
-  $id: string;
-  name: string;
-  description?: string;
-  industry: string;
-  website?: string;
-  logoUrl?:  string ; // URL of the company logo
-  logoId?: string; // ID of the uploaded logo file in the storage bucket
-  createdBy: string; // User ID of the creator
-  email: string; // Email of the creator
-}
-// Define the company interface
+// ----------------- Types -----------------
 export interface Company {
   $id: string;
   name: string;
   description?: string;
   industry: string;
   website?: string;
-  logoUrl?:  string ; // URL of the company logo
-  logoId?: string; // ID of the uploaded logo file in the storage bucket
-  createdBy: string; // User ID of the creator
-  email: string; // Email of the creator
-  $createdAt:string
+  logoUrl?: string; 
+  logoId?: string; 
+  createdBy: string;
+  email: string;
+  $createdAt: string;
 }
 
-// Define the initial state
 interface CompanyState {
   companies: Company[];
-  loading: boolean;
+  isLoading: boolean;
   error: string | null;
-  isadddone:boolean;
+  isAddDone: boolean;
 }
 
-// Initial state with proper structure
+// ----------------- Initial State -----------------
 const initialState: CompanyState = {
   companies: [],
-  loading: false,
+  isLoading: false,
   error: null,
-  isadddone:false,
+  isAddDone: false,
 };
 
-// Helper function to generate file URLs
-const generateFileUrl = (bucketId: string, fileId: string) => {
-  return `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
-};
+// ----------------- Helpers -----------------
+const generateFileUrl = (bucketId: string, fileId: string) =>
+  `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 
-// Helper function to map Document to Company
 const mapDocumentToCompany = (doc: any): Company => ({
   $id: doc.$id,
   name: doc.name,
@@ -59,110 +45,91 @@ const mapDocumentToCompany = (doc: any): Company => ({
   email: doc.email,
   description: doc.description || "",
   website: doc.website || "",
-  logoUrl: doc.logoUrl || "" ,
+  logoUrl: doc.logoUrl || "",
   logoId: doc.logoId || "",
-  $createdAt:doc.$createdAt
+  $createdAt: doc.$createdAt,
 });
 
-// Async thunk to fetch all companies for the current user
-export const fetchCompanies = createAsyncThunk(
+// ----------------- Async Thunks -----------------
+
+// Fetch companies of current user
+export const fetchCompanies = createAsyncThunk<Company[], void>(
   "companies/fetchCompanies",
-  async (_, { getState }): Promise<Company[]> => {
-    try {
-      const { auth }: { auth: { user: { $id: string } } } = getState() as {
-        auth: { user: { $id: string } };
-      };
-      if (!auth.user?.$id) {
-        throw new Error("User not authenticated");
-      }
-      const response = await databases.listDocuments(db, companies, [
-        Query.equal("createdBy", auth.user.$id),
-      ]);
-      return response.documents.map(mapDocumentToCompany); // Map to Company type
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch companies");
-    }
+  async (_, { getState }) => {
+    const { auth }: { auth: { user: { $id: string } } } = getState() as any;
+    if (!auth.user?.$id) throw new Error("User not authenticated");
+
+    const response = await databases.listDocuments(db, companies, [
+      Query.equal("createdBy", auth.user.$id),
+    ]);
+    return response.documents.map(mapDocumentToCompany);
   }
 );
 
-// Async thunk to add a new company
-export const addCompany = createAsyncThunk(
+// Add new company
+export const addCompany = createAsyncThunk<Company, Omit<Company, "$id">>(
   "companies/addCompany",
-  async (companyData: Omit<Company, "$id">, { getState }) => {
-    try {
-      const { auth }: { auth: { user: { $id: string; email: string } } } = getState() as {
-        auth: { user: { $id: string; email: string } };
-      };
-      if (!auth.user?.$id) {
-        throw new Error("User not authenticated");
-      }
-      companyData.createdBy = auth.user.$id;
-      companyData.email = auth.user.email;
+  async (companyData, { getState }) => {
+    const { auth }: { auth: { user: { $id: string; email: string } } } = getState() as any;
+    if (!auth.user?.$id) throw new Error("User not authenticated");
 
-      let logoUrls = "";
-      let logoId = "";
-      if (companyData.logoUrl && typeof companyData.logoUrl !== "string") {
-        const logoFile = companyData.logoUrl;
-        const logoResponse = await storage.createFile(
-          ImageBucket,
-          "unique()",
-          logoFile
-        );
-        logoId = logoResponse.$id;
-        logoUrls = generateFileUrl(ImageBucket, logoId);
-      }
-      const {logoUrl , ...data} = companyData;
-      const companyPayload = {
-        ...data,
-        logoUrl:logoUrls,
-        logoId,
-      };
+    companyData.createdBy = auth.user.$id;
+    companyData.email = auth.user.email;
 
-      const response = await databases.createDocument(
-        db,
-        companies,
-        "unique()",
-        companyPayload
-      );
-      return response as unknown as Company; // Explicitly cast to Company
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to add company");
+    let logoUrl = "";
+    let logoId = "";
+
+    // Upload logo if it’s a File object
+    if (companyData.logoUrl && typeof companyData.logoUrl !== "string") {
+      const logoFile = companyData.logoUrl as unknown as File;
+      const logoResponse = await storage.createFile(ImageBucket, "unique()", logoFile);
+      logoId = logoResponse.$id;
+      logoUrl = generateFileUrl(ImageBucket, logoId);
     }
+
+    const { logoUrl: _ignored, ...data } = companyData;
+    const payload = { ...data, logoUrl, logoId };
+    const response = await databases.createDocument(db, companies, "unique()", payload);
+
+    return mapDocumentToCompany(response);
   }
 );
 
-// Create the slice
+// ----------------- Slice -----------------
 const companySlice = createSlice({
   name: "companies",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchCompanies.pending, (state) => {
-      state.loading = true;
+    const setLoading = (state: CompanyState) => {
+      state.isLoading = true;
       state.error = null;
-      
-    });
+    };
+    const unsetLoading = (state: CompanyState) => {
+      state.isLoading = false;
+    };
+
+    // Fetch companies
+    builder.addCase(fetchCompanies.pending, setLoading);
     builder.addCase(fetchCompanies.fulfilled, (state, action) => {
-      state.loading = false;
-      state.isadddone=true;
+      unsetLoading(state);
       state.companies = action.payload;
+      state.isAddDone = true;
     });
     builder.addCase(fetchCompanies.rejected, (state, action) => {
-      state.loading = false;
+      unsetLoading(state);
       state.error = action.error.message || "Failed to fetch companies";
-      state.isadddone =false;
+      state.isAddDone = false;
     });
 
-    builder.addCase(addCompany.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
+    // Add company
+    builder.addCase(addCompany.pending, setLoading);
     builder.addCase(addCompany.fulfilled, (state, action) => {
-      state.loading = false;
+      unsetLoading(state);
       state.companies.push(action.payload);
     });
     builder.addCase(addCompany.rejected, (state, action) => {
-      state.loading = false;
+      unsetLoading(state);
       state.error = action.error.message || "Failed to add company";
     });
   },

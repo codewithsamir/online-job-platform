@@ -21,8 +21,11 @@ const Header = () => {
             <Button 
             onClick={()=>{
               dispatch(logoutUser())
-              router.push("/")
+              .then(()=>{
+ router.push("/")
               toast.success("Logout successfully")
+              })
+             
             }}
             variant="secondary" className='bg-[#D83F87] text-white hover:bg-[#ff3bb1]'>Logout</Button>
             <Avatar>

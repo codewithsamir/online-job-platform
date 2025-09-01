@@ -132,8 +132,8 @@ const Login = () => {
  <SelectValue placeholder="Select Role" />
 </SelectTrigger>
 <SelectContent>
- <SelectItem value="job seeker">job seeker</SelectItem>
- <SelectItem value="job provider">job provider</SelectItem>
+ <SelectItem value="User">job seeker</SelectItem>
+ <SelectItem value="Jobprovider">job provider</SelectItem>
  
 </SelectContent>
 </Select>

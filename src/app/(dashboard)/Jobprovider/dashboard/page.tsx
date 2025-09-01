@@ -7,61 +7,64 @@ import { fetchJobsByUser } from "@/Ruduxtoolkit/jobSlice";
 import { useAppDispatch, useAppSelector } from "@/Ruduxtoolkit/hook";
 import React, { useEffect, useState } from "react";
 
+
 const Dashboardpage = () => {
   const dispatch = useAppDispatch();
   const { userJobs, loading: jobsLoading } = useAppSelector((state) => state.job);
   const [jobsWithApplicants, setJobsWithApplicants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch jobs on mount
   useEffect(() => {
-    // Fetch jobs posted by the user
-    dispatch(fetchJobsByUser()).then(async () => {
-      if (userJobs.length > 0) {
-        // Fetch applications for each job and get candidate details
+    dispatch(fetchJobsByUser());
+  }, [dispatch]);
+
+  // Fetch applicants for each job
+  useEffect(() => {
+    const fetchApplicants = async () => {
+      if (!userJobs || userJobs.length === 0) {
+        setJobsWithApplicants([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
         const jobsData = await Promise.all(
           userJobs.map(async (job: any) => {
-            try {
-              // Fetch applications for the specific job ID
-              const applications = await dispatch(fetchApplicationsByJob(job.$id)).unwrap();
+            const applications = await dispatch(fetchApplicationsByJob(job.$id)).unwrap();
 
-              // Fetch candidate details for each application
-              const applicants = await Promise.all(
-                applications.map(async (app: any) => {
-                  const candidates = await dispatch(fetchCandidatesByUserId(app.candidateId)).unwrap();
-                  // Find the first candidate in the array (assuming there's only one per ID)
-                  const candidate = candidates?.[0];
+            const applicants = await Promise.all(
+              applications.map(async (app: any) => {
+                const candidates = await dispatch(fetchCandidatesByUserId(app.candidateId)).unwrap();
+                const candidate = candidates?.[0];
+                return {
+                  applicantName: candidate?.fullName || "Unknown",
+                  email: candidate?.email || "N/A",
+                  status: app.status || "Pending",
+                };
+              })
+            );
 
-                  return {
-                    applicantName: candidate?.fullName || "Unknown",
-                    status: app.status || "Pending",
-                    email: candidate?.email || "N/A", // Add additional candidate details if needed
-                  };
-                })
-              );
-
-              return {
-                ...job,
-                applicants,
-              };
-            } catch (error: any) {
-              console.error(`Failed to fetch data for job ${job.$id}:`, error);
-              return {
-                ...job,
-                applicants: [], // Return an empty array if fetching fails
-              };
-            }
+            return { ...job, applicants };
           })
         );
+
         setJobsWithApplicants(jobsData);
+      } catch (error) {
+        console.error(error);
+        setJobsWithApplicants([]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
-  }, []);
+    };
+
+    fetchApplicants();
+  }, [userJobs, dispatch]);
 
   return (
-    <div className="w-full space-y-6 text-white">
+    <div className="w-full space-y-8 text-white">
       {/* Top Cards */}
-      <div className="top flex flex-wrap gap-6">
+      <div className="flex flex-wrap gap-6">
         <Dashboardcard
           content="Jobs Posted"
           className="bg-blue-500"
@@ -88,14 +91,25 @@ const Dashboardpage = () => {
       </div>
 
       {/* Jobs Posted Section */}
-      <div className="table w-full">
-        <h2 className="text-xl font-semibold text-white mb-4">Your Posted Jobs</h2>
-        {loading ? (
-          <p className="text-center text-white">Loading...</p>
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-white">Your Posted Jobs</h2>
+
+        {loading || jobsLoading ? (
+          <p className="text-center text-white text-lg">Loading...</p>
         ) : jobsWithApplicants.length > 0 ? (
           jobsWithApplicants.map((job: any, index: number) => (
-            <div key={index} className="mb-6">
-              <h3 className="text-lg font-semibold text-white mb-2">{job.title}</h3>
+            <div
+              key={index}
+              className="bg-[#3a2c4a] p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-white">{job.title}</h3>
+                <span className="text-sm text-gray-300">{job.industry || "General"}</span>
+              </div>
+
+              {/* Job description rendered as HTML */}
+
+
               <Dashboardtable
                 caption={`Applicants for "${job.title}"`}
                 columns={[
@@ -105,16 +119,17 @@ const Dashboardpage = () => {
                 ]}
                 data={job.applicants}
               />
+
               {job.applicants.length === 0 && (
-                <div className="w-full bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
+                <div className="mt-4 w-full bg-[#2e223f] p-4 rounded-lg text-center text-gray-400">
                   No applicants for this job yet.
                 </div>
               )}
             </div>
           ))
         ) : (
-          <div className="w-full bg-white p-6 rounded-lg shadow-md text-center text-gray-500">
-            No jobs posted yet.
+          <div className="w-full bg-[#2e223f] p-6 rounded-lg shadow-md text-center text-gray-400">
+            You haven't posted any jobs yet.
           </div>
         )}
       </div>

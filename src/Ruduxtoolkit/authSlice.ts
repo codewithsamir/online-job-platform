@@ -14,83 +14,69 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  isLoading: boolean;
-  isAuthenticated: boolean; // Indicates if the user is authenticated
+  isLoadingUser: boolean;   // Loading for fetching user
+  isLoadingAction: boolean; // Loading for login/signup/logout/update prefs
+  isAuthenticated: boolean;
   error: string | null;
 }
 
-// Async thunk for user signup
+// ----------------- Async Thunks ------------------
+
+// Signup user
 export const signupUser = createAsyncThunk<
-  { status: string; message: string }, // Return type
-  { email: string; password: string; name: string; role: string }, // Payload type
-  { rejectValue: string } // Error type
+  { status: string; message: string },
+  { email: string; password: string; name: string; role: string },
+  { rejectValue: string }
 >("auth/signup", async ({ email, password, name, role }, { rejectWithValue, dispatch }) => {
   try {
-    // Step 1: Create the user
     await account.create("unique()", email, password, name);
-
     await dispatch(loginUser({ email, password })).unwrap();
-    // Step 2: Update the user's preferences (role)
     await account.updatePrefs({ role });
-
-    // Step 3: Automatically log in the user
-
-    // Return success status and message
     return { status: "success", message: "User created and logged in successfully" };
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to create user");
   }
 });
 
-// Async thunk for user login
+// Login user
 export const loginUser = createAsyncThunk<
-  { user: User; message: string }, // Return type
-  { email: string; password: string }, // Payload type
-  { rejectValue: string } // Error type
+  { user: User; message: string },
+  { email: string; password: string },
+  { rejectValue: string }
 >("auth/login", async ({ email, password }, { rejectWithValue }) => {
   try {
-    // Step 1: Create an email-password session
     await account.createEmailPasswordSession(email, password);
-
-    // Step 2: Fetch the user details
     const user = await account.get();
-
-    // Return success status and message
     return { user, message: "Login successful" };
   } catch (error: any) {
     return rejectWithValue(error.message || "Invalid email or password");
   }
 });
 
-// Async thunk for Google login
+// Google login
 export const loginWithGoogle = createAsyncThunk<
-  {  message: string },
-  {role?:string},
+  { message: string },
+  { role?: string },
   { rejectValue: string }
->("auth/loginWithGoogle", async ({role}, { rejectWithValue }) => {
+>("auth/loginWithGoogle", async ({ role }, { rejectWithValue }) => {
   try {
-    const userrole:string = role === "job seeker" ? "User" : "Jobprovider"
-    // Step 1: Create OAuth session
-    // Go to OAuth provider login page
-await account.createOAuth2Session(
-  OAuthProvider.Google, // provider
-  `https://online-job-platform.vercel.app/${userrole}/dashboard`, // redirect here on success
-  'https://online-job-platform.vercel.app/failed', // redirect here on failure
-  ['email', 'profile'] // scopes (optional)
-);
-
-    // Step 2: Fetch the user details
-    // const user = await account.get();
-
-    return {  message: "Google login successful" };
+    const userrole: string = role === "job seeker" ? "User" : "Jobprovider";
+    await account.createOAuth2Session(
+      OAuthProvider.Google,
+      `https://online-job-platform.vercel.app/${userrole}/dashboard`,
+      "https://online-job-platform.vercel.app/failed",
+      ["email", "profile"]
+    );
+    return { message: "Google login successful" };
   } catch (error: any) {
     return rejectWithValue(error.message || "Google login failed");
   }
 });
 
+// Update user preferences
 export const updateUserPreferences = createAsyncThunk<
   { message: string },
-  { role: string ,isJobProvider ?: boolean},
+  { role: string; isJobProvider?: boolean },
   { rejectValue: string }
 >("auth/updateUserPreferences", async (data, { rejectWithValue }) => {
   try {
@@ -101,14 +87,11 @@ export const updateUserPreferences = createAsyncThunk<
   }
 });
 
-
-
-// Async thunk for user logout
+// Logout user
 export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
-      // Delete the current session
       await account.deleteSession("current");
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to log out");
@@ -116,21 +99,13 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
   }
 );
 
-// Async thunk for getting the current user
+// Get current user
 export const getUser = createAsyncThunk<User, void, { rejectValue: string }>(
   "auth/getUser",
   async (_, { rejectWithValue }) => {
     try {
-      // Fetch the current user details
-      
-       await account.getSession('current');
-
-// Provider information
-// console.log(session.provider);
-// console.log(session.providerUid);
-// console.log(session.providerAccessToken);
+      await account.getSession("current");
       const response = await account.get();
-      // console.log(response)
       return response as User;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch user");
@@ -138,122 +113,125 @@ export const getUser = createAsyncThunk<User, void, { rejectValue: string }>(
   }
 );
 
-// Initial state
+// ----------------- Slice ------------------
+
 const initialState: AuthState = {
   user: null,
-  isLoading: false,
+  isLoadingUser: false,
+  isLoadingAction: false,
   isAuthenticated: false,
   error: null,
 };
 
-// Auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
     resetAuthState: (state) => {
       state.user = null;
-      state.isLoading = false;
-      state.error = null;
+      state.isLoadingUser = false;
+      state.isLoadingAction = false;
       state.isAuthenticated = false;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Handle signup
+      // Signup
       .addCase(signupUser.pending, (state) => {
-        state.isLoading = true;
+        state.isLoadingAction = true;
         state.error = null;
       })
       .addCase(signupUser.fulfilled, (state) => {
-        state.isLoading = false;
+        state.isLoadingAction = false;
+        state.isAuthenticated = true;
         state.error = null;
-        state.isAuthenticated = true; // User is authenticated after signup
       })
       .addCase(signupUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || "Signup failed";
+        state.isLoadingAction = false;
         state.isAuthenticated = false;
+        state.error = action.payload || "Signup failed";
       })
 
-      // Handle login
+      // Login
       .addCase(loginUser.pending, (state) => {
-        state.isLoading = true;
+        state.isLoadingAction = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isLoadingAction = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
         state.error = null;
-        state.user = action.payload.user; // Store the user data
-        state.isAuthenticated = true; // User is authenticated after login
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || "Login failed";
+        state.isLoadingAction = false;
         state.isAuthenticated = false;
+        state.error = action.payload || "Login failed";
       })
 
-      // Handle logout
+      // Logout
       .addCase(logoutUser.pending, (state) => {
-        state.isLoading = true;
+        state.isLoadingAction = true;
         state.error = null;
       })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.isLoading = false;
+        state.isLoadingAction = false;
         state.user = null;
-        state.isAuthenticated = false; // User is no longer authenticated
+        state.isAuthenticated = false;
       })
       .addCase(logoutUser.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isLoadingAction = false;
         state.error = action.payload || "Logout failed";
       })
 
-      // Handle get user
-      .addCase(getUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(getUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload; // Store the user data
-        state.isAuthenticated = true; // User is authenticated if user data exists
-      })
-      .addCase(getUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || "Failed to fetch user";
-        state.isAuthenticated = false;
-      })
-
-        // handle for google signup or login 
+      // Google login
       .addCase(loginWithGoogle.pending, (state) => {
-        state.isLoading = true;
+        state.isLoadingAction = true;
         state.error = null;
       })
-      .addCase(loginWithGoogle.fulfilled, (state, action) => {
-        state.isLoading = false;
+      .addCase(loginWithGoogle.fulfilled, (state) => {
+        state.isLoadingAction = false;
         state.isAuthenticated = true;
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload || "Google login failed";
+        state.isLoadingAction = false;
         state.isAuthenticated = false;
+        state.error = action.payload || "Google login failed";
       })
 
+      // Update preferences
       .addCase(updateUserPreferences.pending, (state) => {
-        state.isLoading = true;
+        state.isLoadingAction = true;
         state.error = null;
       })
       .addCase(updateUserPreferences.fulfilled, (state) => {
-        state.isLoading = false;
+        state.isLoadingAction = false;
         state.error = null;
       })
       .addCase(updateUserPreferences.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isLoadingAction = false;
         state.error = action.payload || "Failed to update preferences";
+      })
+
+      // Get user
+      .addCase(getUser.pending, (state) => {
+        state.isLoadingUser = true;
+        state.error = null;
+      })
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.isLoadingUser = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(getUser.rejected, (state, action) => {
+        state.isLoadingUser = false;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.error = action.payload || "Failed to fetch user";
       });
   },
 });
 
-// Export actions and reducer
 export const { resetAuthState } = authSlice.actions;
 export default authSlice.reducer;

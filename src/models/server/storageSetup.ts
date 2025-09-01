@@ -1,5 +1,5 @@
 import { Permission } from "node-appwrite";
-import { ImageBucket, resumeBucket } from "../name";
+import { ImageBucket } from "../name";
 import { storage } from "./config";
 
 export default async function getOrCreateStorage() {
@@ -21,23 +21,9 @@ export default async function getOrCreateStorage() {
                 false,
                 undefined,
                 undefined,
-                ["jpg", "png", "gif", "jpeg", "webp", "heic"]
+                ["jpg", "png", "gif", "jpeg", "webp", "heic","pdf", "doc", "docx"]
             );
-            await storage.createBucket(
-                resumeBucket,
-                resumeBucket,
-                [
-                    Permission.create("users"),
-                    Permission.read("any"),
-                    Permission.read("users"),
-                    Permission.update("users"),
-                    Permission.delete("users"),
-                ],
-                false,
-                undefined,
-                undefined,
-                ["pdf", "doc", "docx"] 
-            );
+           
 
             console.log("Storage Created");
             console.log("Storage Connected");

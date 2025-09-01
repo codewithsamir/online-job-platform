@@ -6,7 +6,7 @@ export default function Textedito({ content, setContent }: { content: string; se
     <div className="p-5 w-full">
       <h1 className="text-xl font-bold mb-4">TinyMCE Editor</h1>
       <Editor
-        apiKey="adcqj94qbelb4hxl3u8hliljc3kyf2ceq2flqhen709xvi3b"
+        apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY!}
         value={content} // Controlled value
         onEditorChange={(newContent) => setContent(newContent)} // Update content on change
         init={{
