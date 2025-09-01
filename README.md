@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+📘 Job Portal Web App – Documentation
+🚀 Overview
 
-## Getting Started
+This project is a Job Portal Platform that connects Job Seekers with Job Providers.
+It allows users to create profiles, post and apply for jobs, and manage applications.
+The platform also integrates AI (Google Gemini API) for smart features such as recommendations, content generation, and user assistance.
 
-First, run the development server:
+Built with Next.js, TailwindCSS, shadcn/ui, Redux Toolkit, and Appwrite.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🛠️ Tech Stack
+🔹 Frontend
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Next.js (App Router) → Modern React framework for routing & SSR/CSR.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+React + TypeScript → Type-safe components & hooks.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Tailwind CSS → Utility-first styling.
 
-## Learn More
+shadcn/ui → Prebuilt, accessible, and customizable UI components.
 
-To learn more about Next.js, take a look at the following resources:
+🔹 State Management
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Redux Toolkit for centralized state:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+authSlice → manages authentication and preferences (roles).
 
-## Deploy on Vercel
+candidateSlice → manages candidate profiles.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+applicationSlice → handles job applications.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+jobSlice → fetches and manages job data.
+
+Custom hooks: useAppDispatch, useAppSelector.
+
+🔹 Backend / Database
+
+Appwrite (node-appwrite SDK) → Authentication, Database, Permissions.
+
+Collections:
+
+Candidates → stores profile data (fullName, gender, skills, etc.).
+
+Jobs → stores job postings.
+
+Applications → stores job applications.
+
+Permissions:
+
+Permission.create("users")
+
+Permission.read("users")
+
+Permission.update("users")
+
+Permission.delete("users")
+
+🔹 AI Integration
+
+Google Gemini API:
+
+Used for AI-driven features (e.g., resume parsing, smart job matching, chat assistant, or content generation).
+
+🔑 Core Features
+👤 User Roles
+
+Job Seeker → Can create profile, browse jobs, apply, and track applications.
+
+Job Provider → Can post jobs, view candidates, and manage hiring.
+
+📋 Candidate Features
+
+Profile creation with details like Full Name, Email, Phone, Skills, Education, Experience.
+
+Update profile information anytime.
+
+Apply for jobs directly.
+
+View applied jobs and status.
+
+🏢 Company Features
+
+Post new job listings.
+
+View applicants for posted jobs.
+
+Manage application statuses.
+
+📊 Dashboard
+
+Job Seeker Dashboard → Shows applied jobs, profile status.
+
+Company Dashboard → Shows posted jobs, applications.
+
+Sidebar navigation with Dashboard, Jobs, Applied Jobs, Profile.
+
+🔍 AI Assistance
+
+Smart recommendations & AI chat features powered by Gemini API.
+
+Potential integration for resume parsing or auto-suggestions in forms.
