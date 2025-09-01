@@ -83,12 +83,12 @@ export const addApplication = createAsyncThunk<Application, Partial<Application>
       resumeId = response.$id;
       resumeUrl = generateFileUrl(ImageBucket, resumeId);
     }
-const {applicationDate,candidateId,jobId}  =data;
-    const payload = {
-    applicationDate,
-    candidateId,
-    jobId,
 
+    const { applicationDate, candidateId, jobId } = data;
+    const payload = {
+      applicationDate,
+      candidateId,
+      jobId,
       resumeUrl,
       resumeId,
       status: "Pending",
@@ -131,10 +131,21 @@ export const deleteApplication = createAsyncThunk<string, string>(
 const applicationSlice = createSlice({
   name: "applications",
   initialState,
-  reducers: {},
+  reducers: {
+    resetUpdateState: (state) => {
+      state.isUpdate = false;
+    },
+  },
   extraReducers: (builder) => {
-    const setPending = (state: ApplicationState) => { state.loading = true; state.error = null; state.isUpdate = false; };
-    const setRejected = (state: ApplicationState, error: any) => { state.loading = false; state.error = error.message || "Operation failed"; };
+    const setPending = (state: ApplicationState) => {
+      state.loading = true;
+      state.error = null;
+      state.isUpdate = false;
+    };
+    const setRejected = (state: ApplicationState, error: any) => {
+      state.loading = false;
+      state.error = error.message || "Operation failed";
+    };
 
     builder.addCase(fetchApplicationsByCandidate.pending, setPending);
     builder.addCase(fetchApplicationsByCandidate.fulfilled, (state, action) => {
@@ -176,4 +187,5 @@ const applicationSlice = createSlice({
   },
 });
 
+export const { resetUpdateState } = applicationSlice.actions;
 export default applicationSlice.reducer;

@@ -15,7 +15,7 @@ interface User {
 interface AuthState {
   user: User | null;
   isLoadingUser: boolean;   // Loading for fetching user
-  isLoadingAction: boolean; // Loading for login/signup/logout/update prefs
+  isLoading: boolean; // Loading for login/signup/logout/update prefs
   isAuthenticated: boolean;
   error: string | null;
 }

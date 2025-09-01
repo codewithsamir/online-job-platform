@@ -5,7 +5,7 @@ import { useAppSelector } from '@/Ruduxtoolkit/hook';
 
 const MyInformation = () => {
   // Fetch candidates data from Redux state
-  const { candidates, loading } = useAppSelector((state) => state.candidate);
+  const { candidates, isLoading } = useAppSelector((state) => state.candidate);
 
   // Extract the first candidate document (if available)
   const candidate = candidates?.[0];
@@ -18,12 +18,12 @@ const MyInformation = () => {
       </h2>
 
       {/* Loading State */}
-      {loading && (
+      {isLoading && (
         <p className="text-center text-white">Loading...</p>
       )}
 
       {/* Display Candidate Information */}
-      {!loading && candidate ? (
+      {!isLoading && candidate ? (
         <div className="jobshow mx-auto my-4 w-[70%] h-[500px] bg-[#af8dff3c] px-10 py-4 rounded-xl text-white text-center text-xl flex gap-6 justify-center">
           {/* Profile Picture */}
           <div className="image w-[150px] h-[150px] bg-[#d9d9d945] rounded-md flex items-center justify-center">

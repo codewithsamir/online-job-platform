@@ -1,138 +1,137 @@
-// features/company/companySlice.ts
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { databases, storage } from "@/models/client/config"; 
-import { db, companies, ImageBucket } from "@/models/name"; 
+import { databases } from "@/models/client/config";
+import { db, companies } from "@/models/name";
 import { Query } from "appwrite";
 
-// ----------------- Types -----------------
+// Interface
 export interface Company {
   $id: string;
   name: string;
   description?: string;
   industry: string;
   website?: string;
-  logoUrl?: string; 
-  logoId?: string; 
-  createdBy: string;
+  logoUrl?: string;
+  logoId?: string;
   email: string;
+  createdBy: string;
   $createdAt: string;
 }
 
+// State
 interface CompanyState {
   companies: Company[];
-  isLoading: boolean;
+  loading: boolean;
   error: string | null;
   isAddDone: boolean;
 }
 
-// ----------------- Initial State -----------------
 const initialState: CompanyState = {
   companies: [],
-  isLoading: false,
+  loading: false,
   error: null,
   isAddDone: false,
 };
 
-// ----------------- Helpers -----------------
-const generateFileUrl = (bucketId: string, fileId: string) =>
-  `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
-
-const mapDocumentToCompany = (doc: any): Company => ({
-  $id: doc.$id,
-  name: doc.name,
-  industry: doc.industry,
-  createdBy: doc.createdBy,
-  email: doc.email,
-  description: doc.description || "",
-  website: doc.website || "",
-  logoUrl: doc.logoUrl || "",
-  logoId: doc.logoId || "",
-  $createdAt: doc.$createdAt,
-});
-
-// ----------------- Async Thunks -----------------
-
-// Fetch companies of current user
-export const fetchCompanies = createAsyncThunk<Company[], void>(
+// ✅ Fetch all companies
+export const fetchCompanies = createAsyncThunk(
   "companies/fetchCompanies",
-  async (_, { getState }) => {
-    const { auth }: { auth: { user: { $id: string } } } = getState() as any;
-    if (!auth.user?.$id) throw new Error("User not authenticated");
-
-    const response = await databases.listDocuments(db, companies, [
-      Query.equal("createdBy", auth.user.$id),
-    ]);
-    return response.documents.map(mapDocumentToCompany);
-  }
-);
-
-// Add new company
-export const addCompany = createAsyncThunk<Company, Omit<Company, "$id">>(
-  "companies/addCompany",
-  async (companyData, { getState }) => {
-    const { auth }: { auth: { user: { $id: string; email: string } } } = getState() as any;
-    if (!auth.user?.$id) throw new Error("User not authenticated");
-
-    companyData.createdBy = auth.user.$id;
-    companyData.email = auth.user.email;
-
-    let logoUrl = "";
-    let logoId = "";
-
-    // Upload logo if it’s a File object
-    if (companyData.logoUrl && typeof companyData.logoUrl !== "string") {
-      const logoFile = companyData.logoUrl as unknown as File;
-      const logoResponse = await storage.createFile(ImageBucket, "unique()", logoFile);
-      logoId = logoResponse.$id;
-      logoUrl = generateFileUrl(ImageBucket, logoId);
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await databases.listDocuments(db, companies, [
+        Query.orderDesc("$createdAt"),
+      ]);
+      return response.documents as Company[];
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch companies");
     }
-
-    const { logoUrl: _ignored, ...data } = companyData;
-    const payload = { ...data, logoUrl, logoId };
-    const response = await databases.createDocument(db, companies, "unique()", payload);
-
-    return mapDocumentToCompany(response);
   }
 );
 
-// ----------------- Slice -----------------
+// ✅ Add new company
+export const addCompany = createAsyncThunk(
+  "companies/addCompany",
+  async (newCompany: Omit<Company, "$id" | "$createdAt">, { rejectWithValue }) => {
+    try {
+      const response = await databases.createDocument(db, companies, "unique()", newCompany);
+      return response as Company;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to add company");
+    }
+  }
+);
+
+// ✅ Delete company
+export const deleteCompany = createAsyncThunk(
+  "companies/deleteCompany",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await databases.deleteDocument(db, companies, id);
+      return id;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to delete company");
+    }
+  }
+);
+
+// ✅ Update company
+export const updateCompany = createAsyncThunk(
+  "companies/updateCompany",
+  async (
+    { id, data }: { id: string; data: Partial<Company> },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await databases.updateDocument(db, companies, id, data);
+      return response as Company;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to update company");
+    }
+  }
+);
+
 const companySlice = createSlice({
-  name: "companies",
+  name: "company",
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    const setLoading = (state: CompanyState) => {
-      state.isLoading = true;
-      state.error = null;
-    };
-    const unsetLoading = (state: CompanyState) => {
-      state.isLoading = false;
-    };
-
-    // Fetch companies
-    builder.addCase(fetchCompanies.pending, setLoading);
-    builder.addCase(fetchCompanies.fulfilled, (state, action) => {
-      unsetLoading(state);
-      state.companies = action.payload;
-      state.isAddDone = true;
-    });
-    builder.addCase(fetchCompanies.rejected, (state, action) => {
-      unsetLoading(state);
-      state.error = action.error.message || "Failed to fetch companies";
+  reducers: {
+    resetAddDone: (state) => {
       state.isAddDone = false;
-    });
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch
+      .addCase(fetchCompanies.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCompanies.fulfilled, (state, action) => {
+        state.loading = false;
+        state.companies = action.payload;
+      })
+      .addCase(fetchCompanies.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
 
-    // Add company
-    builder.addCase(addCompany.pending, setLoading);
-    builder.addCase(addCompany.fulfilled, (state, action) => {
-      unsetLoading(state);
-      state.companies.push(action.payload);
-    });
-    builder.addCase(addCompany.rejected, (state, action) => {
-      unsetLoading(state);
-      state.error = action.error.message || "Failed to add company";
-    });
+      // Add
+      .addCase(addCompany.fulfilled, (state, action) => {
+        state.companies.unshift(action.payload);
+        state.isAddDone = true;
+      })
+
+      // Delete
+      .addCase(deleteCompany.fulfilled, (state, action) => {
+        state.companies = state.companies.filter((c) => c.$id !== action.payload);
+      })
+
+      // Update
+      .addCase(updateCompany.fulfilled, (state, action) => {
+        state.companies = state.companies.map((c) =>
+          c.$id === action.payload.$id ? action.payload : c
+        );
+      });
   },
 });
 
+export const { resetAddDone } = companySlice.actions;
 export default companySlice.reducer;
